@@ -2,6 +2,10 @@ from flask import flash, redirect, url_for
 from flask_login import LoginManager, current_user
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
+from src.models.admin import Admin
+from flask_login import current_user
+from flask import flash, redirect, url_for
+from functools import wraps
 
 db = SQLAlchemy()
 
@@ -11,10 +15,12 @@ login_manager.login_view = "auth.login"
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        print(f"{current_user}.is_authenticated:", current_user.is_authenticated)
-        print("current_user.is_admin:", getattr(current_user, "is_admin", None))
-        if not current_user.is_authenticated or not getattr(current_user, "is_admin", False):
-            flash("Admin access required")
+        if not current_user.is_authenticated:
+            flash("Please log in to access this page.")
+            return redirect(url_for("auth.login"))
+        admin = Admin.query.filter_by(national_id=current_user.national_id).first()
+        if not admin:
+            flash("Admin access required.")
             return redirect(url_for("auth.login"))
         return f(*args, **kwargs)
     return decorated_function
