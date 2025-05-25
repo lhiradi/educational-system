@@ -2,7 +2,7 @@ from flask import flash, redirect, url_for
 from flask_login import LoginManager, current_user
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
-from src.models.admin import Admin
+
 from flask_login import current_user
 from flask import flash, redirect, url_for
 from functools import wraps
@@ -13,6 +13,7 @@ login_manager = LoginManager()
 login_manager.login_view = "auth.login"
 
 def admin_required(f):
+    from src.models.admin import Admin
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated:
