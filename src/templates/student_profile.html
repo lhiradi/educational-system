@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ student.first_name }} {{ student.last_name }} - Profile</title>
+</head>
+<body>
+    <h1>{{ student.first_name }} {{ student.last_name }}'s Profile</h1>
+    <p><strong>Student ID:</strong> {{ student.student_id }}</p>
+    <p><strong>National ID:</strong> {{ student.national_id }}</p>
+    <p><strong>Date of Birth:</strong> {{ student.date_of_birth }}</p>
+
+    <h2>Enrolled Courses</h2>
+    <table border="1" cellpadding="5">
+        <tr>
+            <th>Course Name</th>
+            <th>Course ID</th>
+            <th>Grade</th>
+        </tr>
+        {% for course, grade in zip(courses, grades) %}
+        <tr>
+            <td>{{ course.course_name }}</td>
+            <td>{{ course.course_id }}</td>
+            <td>{{ grade or 'N/A' }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
