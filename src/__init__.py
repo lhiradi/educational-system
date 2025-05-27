@@ -8,6 +8,9 @@ from src.models.teacher import Teacher
 from src.models.course import Course
 from src.routes.main_routes import main_bp
 from src.routes.auth_routes import auth_bp
+from src.routes.admin_routes import admin_bp
+from src.models.admin import Admin
+from src.models.student import Student
 
 def create_app():
     app = Flask(__name__)
@@ -16,16 +19,15 @@ def create_app():
     db.init_app(app)
     login_manager.init_app(app)
     
+    
     @login_manager.user_loader
     def load_user(user_id):
-        user = (
-            Student.query.get(int(user_id)) or
-            Teacher.query.get(int(user_id)) or
-            Admin.query.get(int(user_id))
-        )
-        return user
+        admin = Admin.query.get(int(user_id))
+        if admin:
+            return admin
+        return Student.query.get(int(user_id))
     
-   
+    app.register_blueprint(admin_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
 

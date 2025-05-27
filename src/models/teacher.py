@@ -9,7 +9,7 @@ class Teacher(db.Model, UserMixin):
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     date_of_birth = db.Column(db.Date)
-    courses = db.relationship('Course', back_populates='teacher')
+    courses = db.relationship('Course', back_populates='teacher', cascade="all, delete-orphan")
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

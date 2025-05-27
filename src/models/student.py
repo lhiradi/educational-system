@@ -11,9 +11,11 @@ class Student(db.Model, UserMixin):
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     date_of_birth = db.Column(db.Date)
+    unit = db.Column(db.Integer, default=0)
     course_links = db.relationship(
         'StudentsCourses',
-        back_populates='student'
+        back_populates='student',
+        cascade="all, delete-orphan"
     )
 
     def set_password(self, password):

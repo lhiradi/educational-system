@@ -6,7 +6,7 @@ class Admin(db.Model, UserMixin):
     __tablename__ = "admins"
     id = db.Column(db.Integer, primary_key=True)
     admin_id = db.Column(db.String(13), nullable=False, unique=True)
-    national_id = db.Column(db.String(10), nullable=-False, unique=True)
+    national_id = db.Column(db.String(10), nullable=False, unique=True)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     password_hash = db.Column(db.String, nullable=False)

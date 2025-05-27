@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Admin Home{% endblock %}
+{% block content %}
+<h1>Admin Home</h1>
+<p><a href="{{ url_for('admin.show_students') }}" class="btn">Manage Students</a></p>
+<p><a href="{{ url_for('admin.show_courses') }}" class="btn">Manage Courses</a></p>
+<p><a href="{{ url_for('admin.show_teachers') }}" class="btn">Manage Teachers</a></p>
+<p><a href="{{ url_for('admin.show_enrollments') }}" class="btn">Manage Enrollments</a></p>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Delete Teacher{% endblock %}
+{% block content %}
+<h1>Delete Teacher</h1>
+<p>Are you sure you want to delete teacher {{ teacher.first_name }} {{ teacher.last_name }} (ID: {{ teacher.teacher_id }})?</p>
+<form method="post">
+    <button type="submit">Confirm Delete</button>
+    <a href="{{ url_for('admin.show_teachers') }}">Cancel</a>
+</form>
+<style>
+button {
+    background: #c0392b;
+    color: #fff;
+    border: none;
+    padding: 0.7rem 1.2rem;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-right: 1rem;
+    transition: background 0.2s;
+}
+button:hover {
+    background: #e74c3c;
+}
+a {
+    font-size: 1rem;
+    color: #273c75;
+    text-decoration: none;
+    padding: 0.7rem 1.2rem;
+    border-radius: 5px;
+    border: 1px solid #273c75;
+    transition: background 0.2s, color 0.2s;
+}
+a:hover {
+    background: #273c75;
+    color: #fff;
+}
+</style>
+{% endblock %}

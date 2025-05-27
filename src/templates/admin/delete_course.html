@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Delete Course{% endblock %}
+{% block content %}
+<h1>Delete Course</h1>
+<p>Are you sure you want to delete course {{ course.course_name }} (ID: {{ course.id }})?</p>
+<form method="post">
+    <button type="submit">Delete Course</button>
+    <a href="{{ url_for('admin.delete_course', id=course.id) }}" style="margin-left: 1rem;">Cancel</a>
+</form>
+<style>
+form {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 400px;
+}
+button {
+    background: #c0392b;
+    color: #fff;
+    border: none;
+    padding: 0.7rem 1.2rem;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background 0.2s;
+}
+button:hover {
+    background: #e74c3c;
+}
+a {
+    text-decoration: none;
+    color: #273c75;
+    font-weight: 500;
+}
+a:hover {
+    text-decoration: underline;
+}
+</style>
+{% endblock %}

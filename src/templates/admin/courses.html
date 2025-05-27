@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}All Courses{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('admin.home') }}" class="btn btn-primary">Admin Home</a></p>
+<p><a href="{{ url_for('admin.create_course') }}" class="btn btn-success">Create Course</a></p>
+<h1>All Courses</h1>
+<div class="table-container">
+<table>
+    <thead>
+        <tr>
+            <th>Course ID</th>
+            <th>Name</th>
+            <th>Teacher ID</th>
+            <th>Units</th>
+            <th>Capacity</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Days</th>
+            <th>Time Range</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for course in courses %}
+        <tr>
+            <td>{{ course.course_id }}</td>
+            <td>{{ course.course_name }}</td>
+            <td>{{ course.teacher.teacher_id }}</td>
+            <td>{{ course.course_unit }}</td>
+            <td>{{ course.capacity }}</td>
+            <td>{{ course.start_date.strftime('%Y-%m-%d') if course.start_date else '' }}</td>
+            <td>{{ course.end_date.strftime('%Y-%m-%d') if course.end_date else '' }}</td>
+            <td>{{ course.days }}</td>
+            <td>{{ course.start_time.strftime('%H:%M') if course.start_time else '' }} - {{ course.end_time.strftime('%H:%M') if course.end_time else '' }}</td>
+            <td>
+                <a href="{{ url_for('admin.edit_course', id=course.id) }}" class="btn btn-warning btn-sm">Edit</a>
+                <a href="{{ url_for('admin.delete_course', id=course.id) }}" class="btn btn-danger btn-sm">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Edit Enrollment{% endblock %}
+{% block content %}
+<h1>Edit Enrollment</h1>
+<form method="post">
+    <label for="student_id">Student</label>
+    <select id="student_id" name="student_id" required>
+        <option value="" disabled>Select a student</option>
+        {% for student in students %}
+        <option value="{{ student.id }}" {% if student.id == enrollment.student_id %}selected{% endif %}>{{ student.first_name }} {{ student.last_name }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="course_id">Course</label>
+    <select id="course_id" name="course_id" required>
+        <option value="" disabled>Select a course</option>
+        {% for course in courses %}
+        <option value="{{ course.id }}" {% if course.id == enrollment.course_id %}selected{% endif %}>{{ course.course_name }} ({{ course.course_id }})</option>
+        {% endfor %}
+    </select>
+
+    <label for="enrollment_date">Enrollment Date</label>
+    <input type="date" id="enrollment_date" name="enrollment_date" value="{{ enrollment.enrollment_date.strftime('%Y-%m-%d') }}" required>
+
+    <label for="grade">Grade</label>
+    <input type="text" id="grade" name="grade" value="{{ enrollment.grade }}">
+
+    <button type="submit">Update Enrollment</button>
+</form>
+<style>
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 400px;
+}
+label {
+    font-weight: 500;
+}
+input[type="text"], input[type="date"], select {
+    padding: 0.5rem;
+    border: 1px solid #b2bec3;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+button {
+    background: #273c75;
+    color: #fff;
+    border: none;
+    padding: 0.7rem 1.2rem;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background 0.2s;
+}
+button:hover {
+    background: #40739e;
+}
+</style>
+{% endblock %}

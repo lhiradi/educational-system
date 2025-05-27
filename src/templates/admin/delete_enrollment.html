@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Delete Enrollment{% endblock %}
+{% block content %}
+<h1>Delete Enrollment</h1>
+<p>Are you sure you want to delete the following enrollment?</p>
+<ul>
+    <li><strong>Student:</strong> {{ enrollment.student.first_name }} {{ enrollment.student.last_name }}</li>
+    <li><strong>Course:</strong> {{ enrollment.course.course_name }} ({{ enrollment.course.course_id }})</li>
+    <li><strong>Enrollment Date:</strong> {{ enrollment.enrollment_date.strftime('%Y-%m-%d') }}</li>
+    <li><strong>Grade:</strong> {{ enrollment.grade }}</li>
+</ul>
+<form method="post">
+    <button type="submit">Confirm Delete</button>
+    <a href="{{ url_for('admin.show_enrollments') }}">Cancel</a>
+</form>
+{% endblock %}
