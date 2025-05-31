@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, session
 from flask_login import login_user, login_required, logout_user
 from src.models.student import Student
 from src.models.teacher import Teacher
@@ -17,7 +17,17 @@ def login():
             Admin.query.filter_by(admin_id=user_id).first()
         )
         
+        user_type = None
+        if isinstance(user, Admin):
+            user_type = "admin"
+        elif isinstance(user, Teacher):
+            user_type = "teacher"
+        else: 
+            user_type = "student"
+        
+        
         if user and user.check_password(password):
+            session["user_type"] = user_type
             login_user(user)
             return redirect(url_for('main.index'))
         else:

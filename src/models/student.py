@@ -10,6 +10,7 @@ class Student(db.Model, UserMixin):
     national_id = db.Column(db.String(10), nullable=False, unique=True)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
+    password_hash = db.Column(db.String)
     date_of_birth = db.Column(db.Date)
     unit = db.Column(db.Integer, default=0)
     course_links = db.relationship(
@@ -18,6 +19,10 @@ class Student(db.Model, UserMixin):
         cascade="all, delete-orphan"
     )
 
+    @property
+    def user_type(self):
+        return "student"
+    
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 

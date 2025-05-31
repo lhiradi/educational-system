@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, session
 from src.configs.config import Config
 from src.extensions import db
 from src.extensions import login_manager
@@ -9,6 +9,7 @@ from src.models.course import Course
 from src.routes.main_routes import main_bp
 from src.routes.auth_routes import auth_bp
 from src.routes.admin_routes import admin_bp
+from src.routes.teacher_routes import teacher_bp
 from src.models.admin import Admin
 from src.models.student import Student
 
@@ -23,10 +24,15 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         admin = Admin.query.get(int(user_id))
-        if admin:
+        if admin and session.get("user_type") == "admin":
             return admin
+        teacher = Teacher.query.get(int(user_id))
+        if teacher and session.get("user_type") == "teacher":
+            return teacher
+        
         return Student.query.get(int(user_id))
     
+    app.register_blueprint(teacher_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)

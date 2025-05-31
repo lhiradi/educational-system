@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Score{% endblock %}
+
+{% block content %}
+<h1>Edit Score</h1>
+
+<p>Student: {{ enrollment.student.first_name }} {{ enrollment.student.last_name }}</p>
+<p>Course: {{ enrollment.course.name }}</p>
+
+<form method="POST">
+    <label for="grade">Grade:</label>
+    <input type="text" id="grade" name="grade" value="{{ enrollment.grade }}" required>
+    <button type="submit" class="btn">Update Score</button>
+</form>
+
+{% endblock %}

@@ -42,7 +42,7 @@ def create_student():
     return render_template("admin/create_student.html")
 
 
-@admin_bp.route("/student/delete/<int:id>", methods=["POST", "GET"])
+@admin_bp.route("/student/<int:id>/delete", methods=["POST", "GET"])
 @login_required
 @admin_required
 def delete_student(id):
@@ -102,7 +102,7 @@ def create_course():
     teachers = Teacher.query.all()
     return render_template("admin/create_course.html", teachers=teachers)
 
-@admin_bp.route("/edit/<int:id>/course", methods=["POST", "GET"])
+@admin_bp.route("/course/<int:id>/edit", methods=["POST", "GET"])
 @login_required
 @admin_required
 def edit_course(id):
@@ -124,7 +124,7 @@ def edit_course(id):
         return redirect(url_for("admin.home"))
     return render_template("admin/edit_course.html", course=course, teachers=teachers)
 
-@admin_bp.route("/course/delete/<int:id>", methods=["POST", "GET"])
+@admin_bp.route("/course/<int:id>/delete", methods=["POST", "GET"])
 @login_required
 @admin_required
 def delete_course(id):
@@ -148,7 +148,7 @@ def show_teachers():
     teachers = Teacher.query.all()
     return render_template("admin/teachers.html", teachers=teachers)
 
-@admin_bp.route("/create/teacher", methods=["POST", "GET"])
+@admin_bp.route("/teacher/create", methods=["POST", "GET"])
 @login_required
 @admin_required
 def create_teacher():
@@ -181,7 +181,7 @@ def edit_teacher(id):
         return redirect(url_for("admin.home"))
     return render_template("admin/edit_teacher.html", teacher=teacher)
 
-@admin_bp.route("/teacher/delete/<int:id>", methods=["POST", "GET"])
+@admin_bp.route("/teacher/<int:id>/delete", methods=["POST", "GET"])
 @login_required
 @admin_required
 def delete_teacher(id):

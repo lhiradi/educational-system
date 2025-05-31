@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Teacher Home{% endblock %}
+
+{% block content %}
+<h1>Welcome, {{ teacher.name }}!</h1>
+
+<p>This is your home page where you can manage your courses and students.</p>
+
+<ul>
+    <li><a href="{{ url_for('teacher.show_courses') }}" class="btn">My Courses</a></li>
+    <li><a href="{{ url_for('teacher.show_students') }}" class="btn">My Students</a></li>
+</ul>
+
+{% endblock %}
