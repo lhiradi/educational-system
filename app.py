@@ -9,11 +9,13 @@ from src.models.teacher import Teacher
 from src.models.course import Course
 from src.models.students_courses import StudentsCourses
 from src.models.setting import Setting
+from src.utils.logger import Logger
 import datetime
 load_dotenv()
 
 app = create_app()
 app.secret_key = getenv("SECRET_KEY")
+logger = Logger("app")
 
 with app.app_context():
     db.create_all()
@@ -33,7 +35,10 @@ with app.app_context():
 
     db.session.commit()
 
- 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    try:
+        app.run(debug=True)
+    except:
+        logger.error("Failed to start app!")
+        

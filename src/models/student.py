@@ -1,17 +1,13 @@
 from src.extensions import db
+from src.models.base_model import BaseModel
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from src.models.students_courses import StudentsCourses
 
-class Student(db.Model, UserMixin):
+class Student(BaseModel, UserMixin):
     __tablename__ = "students"
-    id = db.Column(db.Integer, primary_key=True)
+    
     student_id = db.Column(db.String(13), nullable=False, unique=True)
-    national_id = db.Column(db.String(10), nullable=False, unique=True)
-    first_name = db.Column(db.String(50), nullable=False)
-    last_name = db.Column(db.String(50), nullable=False)
-    password_hash = db.Column(db.String)
-    date_of_birth = db.Column(db.Date)
     unit = db.Column(db.Integer, default=0)
     course_links = db.relationship(
         'StudentsCourses',
@@ -21,6 +17,7 @@ class Student(db.Model, UserMixin):
 
     @property
     def user_type(self):
+        
         return "student"
     
     def set_password(self, password):
@@ -28,3 +25,4 @@ class Student(db.Model, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    

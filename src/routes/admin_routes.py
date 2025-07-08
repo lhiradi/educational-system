@@ -95,6 +95,7 @@ def create_course():
         course.capacity = request.form["capacity"]
         course.start_date = datetime.datetime.strptime(request.form["start_date"], "%Y-%m-%d").date()
         course.end_date = datetime.datetime.strptime(request.form["end_date"], "%Y-%m-%d").date()
+        # TODO: add validation for days
         course.days = request.form["days"]
         course.start_time = datetime.datetime.strptime(request.form["start_time"], "%H:%M").time()
         course.end_time = datetime.datetime.strptime(request.form["end_time"], "%H:%M").time()

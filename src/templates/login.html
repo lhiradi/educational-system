@@ -3,10 +3,25 @@
 {% block content %}
 <div class="login-container">
     <h2>Login</h2>
-    <form method="POST" id="loginForm">
-        <input type="text" name="user_id" placeholder="User ID" required class="input-field">
-        <input type="password" name="password" placeholder="Password" required class="input-field">
-        <button type="submit" class="btn">Login</button>
+    <form method="POST" id="loginForm" novalidate>
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.user_id.label }}<br>
+            {{ form.user_id(class="input-field") }}
+            {% for error in form.user_id.errors %}
+                <span class="error">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.password.label }}<br>
+            {{ form.password(class="input-field") }}
+            {% for error in form.password.errors %}
+                <span class="error">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.submit(class="btn") }}
+        </div>
     </form>
 </div>
 {% endblock %}
