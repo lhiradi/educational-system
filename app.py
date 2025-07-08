@@ -8,6 +8,7 @@ from src.models.admin import Admin
 from src.models.teacher import Teacher
 from src.models.course import Course
 from src.models.students_courses import StudentsCourses
+from src.models.setting import Setting
 import datetime
 load_dotenv()
 
@@ -16,6 +17,9 @@ app.secret_key = getenv("SECRET_KEY")
 
 with app.app_context():
     db.create_all()
+    if not Setting.query.first():
+        db.session.add(Setting(enrollment_open=False))
+        db.session.commit()
     # for test purpose
     admin = Admin()
     admin.admin_id = "admin002"

@@ -16,16 +16,19 @@
     <input type="number" id="capacity" name="capacity" min="1" value="{{ course.capacity }}" required>
 
     <label for="start_date">Start Date</label>
-    <input type="date" id="start_date" name="start_date" value="{{ course.start_date|strftime('%Y-%m-%d') }}" required>
+    <input type="date" id="start_date" name="start_date" value="{{ course.start_date.strftime('%Y-%m-%d') if course.start_date else '' }}" required>
 
     <label for="end_date">End Date</label>
-    <input type="date" id="end_date" name="end_date" value="{{ course.end_date|strftime('%Y-%m-%d') }}" required>
+    <input type="date" id="end_date" name="end_date" value="{{ course.end_date.strftime('%Y-%m-%d') if course.end_date else '' }}" required>
 
     <label for="days">Days (comma separated, e.g. Monday, Wednesday)</label>
     <input type="text" id="days" name="days" value="{{ course.days }}" required>
 
-    <label for="time_range">Time Range (e.g. 09:00-11:00)</label>
-    <input type="text" id="time_range" name="time_range" value="{{ course.time_range }}" required>
+    <label for="start_time">Start Time</label>
+    <input type="time" id="start_time" name="start_time" value="{{ course.start_time.strftime('%H:%M') if course.start_time else '' }}" required>
+
+    <label for="end_time">End Time</label>
+    <input type="time" id="end_time" name="end_time" value="{{ course.end_time.strftime('%H:%M') if course.end_time else '' }}" required>
 
     <label for="teacher_id">Teacher</label>
     <select id="teacher_id" name="teacher_id" required>

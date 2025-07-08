@@ -10,6 +10,7 @@ from src.routes.main_routes import main_bp
 from src.routes.auth_routes import auth_bp
 from src.routes.admin_routes import admin_bp
 from src.routes.teacher_routes import teacher_bp
+from src.routes.student_routes import student_bp
 from src.models.admin import Admin
 from src.models.student import Student
 
@@ -32,6 +33,7 @@ def create_app():
         
         return Student.query.get(int(user_id))
     
+    app.register_blueprint(student_bp)
     app.register_blueprint(teacher_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(main_bp)

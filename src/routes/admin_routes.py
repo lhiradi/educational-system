@@ -8,13 +8,16 @@ from src.models.course import Course
 from src.models.teacher import Teacher
 from src.models.students_courses import StudentsCourses
 from src.extensions import db
+from src.models.setting import Setting
+
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
 @admin_bp.route("/")
 @login_required
 @admin_required
 def home():
-    return render_template("admin/home.html")
+    setting = Setting.query.first()
+    return render_template("admin/home.html", setting=setting)
 
 @admin_bp.route("/students")
 @login_required
@@ -247,3 +250,13 @@ def delete_enrollment(student_id, course_id):
         flash("Enrollment deleted successfully!")
         return redirect(url_for("admin.show_enrollments"))
     return render_template("admin/delete_enrollment.html", enrollment=enrollment)
+
+@admin_bp.route("/toggle-enrollment", methods=["POST"])
+@login_required
+@admin_required
+def toggle_enrollment():
+    setting = Setting.query.first()
+    setting.enrollment_open = not setting.enrollment_open
+    db.session.commit()
+    flash(f"Enrollment is now {'open' if setting.enrollment_open else 'closed'}.")
+    return redirect(url_for("admin.home"))

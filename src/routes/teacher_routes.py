@@ -32,13 +32,14 @@ def show_students():
    student_courses = zip(courses, students)
    return render_template("teacher/students.html", student_courses=student_courses, courses=courses)
    
-@teacher_bp.route("/student/<int:id>/delete", methods=["POST", "GET"])
+@teacher_bp.route("/student/<int:student_id>/<int:course_id>/delete", methods=["POST", "GET"])
 @login_required
 @teacher_required
-def delete_student(id):
-    student = Student.query.get_or_404(id)
+def delete_student(student_id, course_id):
+    student = Student.query.get_or_404(student_id)
+    enrollment = StudentsCourses.query.filter_by(student_id=student_id, course_id=course_id).first()
     if request.method == "POST":
-        db.session.delete(student)
+        db.session.delete(enrollment)
         db.session.commit()
         flash(f"{student.first_name} {student.last_name} deleted from selected course.")
         return redirect(url_for("teacher.teacher_home"))

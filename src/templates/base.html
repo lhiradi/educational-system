@@ -15,6 +15,9 @@
                 <li><a href="{{ url_for('main.index') }}">Home</a></li>
                 <li><a href="{{ url_for('auth.login') }}">Login</a></li>
                 <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+                {% if current_user.is_authenticated and current_user.user_type == "student" %}
+                <li><a href="{{ url_for('student.home') }}">Student</a></li>
+                {% endif %}
                 {% if current_user.is_authenticated and current_user.user_type == "admin" %}
                 <li><a href="{{ url_for('admin.home') }}">Admin</a></li>
                 {% endif %}

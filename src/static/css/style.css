@@ -4,6 +4,59 @@ body {
     margin: 0;
     padding: 0;
 }
+
+.courses-table {
+    border-collapse: collapse;
+    width: 100%;
+    background: #fff;
+    margin-top: 1rem;
+    font-size: 1rem;
+}
+
+.enroll-form {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    max-width: 500px;
+}
+
+.enroll-form label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #222f3e;
+}
+
+.enroll-form select {
+    padding: 0.5rem 1rem;
+    border: 1px solid #b2bec3;
+    border-radius: 5px;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    background: #fff;
+    transition: border-color 0.2s;
+}
+
+.enroll-form select:focus {
+    border-color: #54a0ff;
+    outline: none;
+}
+
+.enroll-button {
+    align-self: flex-start;
+    display: inline-block;
+    background: #273c75;
+    color: #fff;
+    padding: 0.7rem 1.5rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    margin: 0.5rem 0.5rem 0.5rem 0;
+    box-shadow: 0 2px 8px rgba(39,60,117,0.08);
+    transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+}
 header {
     background: #222f3e;
     color: #fff;
@@ -94,15 +147,33 @@ input[type="text"].table-search {
     display: inline-block;
     background: #273c75;
     color: #fff;
-    padding: 0.8rem 1.5rem;
+    padding: 0.7rem 1.5rem;
     border-radius: 5px;
     text-decoration: none;
-    margin-right: 1rem;
-    font-size: 1.1rem;
-    transition: background 0.2s;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    margin: 0.5rem 0.5rem 0.5rem 0;
+    box-shadow: 0 2px 8px rgba(39,60,117,0.08);
+    transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
 }
 .btn:hover {
     background: #40739e;
+    box-shadow: 0 4px 16px rgba(39,60,117,0.15);
+    transform: translateY(-2px) scale(1.03);
+}
+
+.btn:active {
+    background: #192a56;
+    transform: translateY(1px) scale(0.98);
+}
+
+.btn-danger {
+    background: #e84118;
+}
+.btn-danger:hover {
+    background: #c23616;
 }
 footer {
     background: #222f3e;
