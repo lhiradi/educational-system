@@ -7,7 +7,7 @@ from wtforms.validators import DataRequired, Length, NumberRange, Optional
 
 
 class TeacherForm(FlaskForm):
-    Teacher_id = StringField('Teacher ID', validators=[DataRequired(), Length(min=4, max=13)])
+    teacher_id = StringField('Teacher ID', validators=[DataRequired(), Length(min=4, max=13)])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6, max=64)])
     first_name = StringField('First Name', validators=[DataRequired(), Length(max=64)])
     last_name = StringField('Last Name', validators=[DataRequired(), Length(max=64)])

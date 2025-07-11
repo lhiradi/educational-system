@@ -2,7 +2,7 @@
 {% block title %}Delete Course{% endblock %}
 {% block content %}
 <h1>Delete Course</h1>
-<p>Are you sure you want to delete course {{ course.course_name }} (ID: {{ course.id }})?</p>
+<p>Are you sure you want to delete course {{ course.course_name }} (ID: {{ course.course_id }})?</p>
 <form method="post">
     <button type="submit">Delete Course</button>
     <a href="{{ url_for('admin.delete_course', id=course.id) }}" style="margin-left: 1rem;">Cancel</a>

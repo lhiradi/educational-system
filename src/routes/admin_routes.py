@@ -1,48 +1,72 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from sqlalchemy.orm import joinedload
-import datetime
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from flask_login import login_required
 from src.extensions import admin_required
 from src.models.student import Student
 from src.models.course import Course
 from src.models.teacher import Teacher
+from src.forms.student_form import StudentForm, StudentProfileForm
+from src.forms.course_form import CourseForm
+from src.forms.teacher_form import TeacherForm, TeacherProfileForm
+from src.forms.enrollment_form import EnrollmentForm
 from src.models.students_courses import StudentsCourses
 from src.extensions import db
 from src.models.setting import Setting
+from src.utils.logger import Logger
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
+logger = Logger("admin_app") 
 
 @admin_bp.route("/")
 @login_required
 @admin_required
 def home():
     setting = Setting.query.first()
+    logger.info("Admin accessed the admin dashboard.")
     return render_template("admin/home.html", setting=setting)
 
 @admin_bp.route("/students")
 @login_required
 @admin_required
 def show_students():
-    students = Student.query.all()
+    logger.info("Admin visited the students page.")
+    try:
+        students = Student.query.all()
+    except SQLAlchemyError as e:
+        logger.error(f"Database error during fetching students: {e}")
+        flash("A database error occurred while fetching students.", "danger")
+        students = []
     return render_template("admin/students.html", students=students)
 
 @admin_bp.route("/create/student", methods=["POST", "GET"])
 @login_required
 @admin_required
 def create_student():
-    if request.method == "POST":
-        student = Student()
-        student.first_name = request.form["first_name"]
-        student.last_name = request.form["last_name"]
-        student.student_id = request.form["student_id"]
-        student.date_of_birth = datetime.datetime.strptime(request.form["date_of_birth"], "%Y-%m-%d").date()
-        student.national_id = request.form["national_id"]
-        student.set_password(request.form["password"])
-        db.session.add(student)
-        db.session.commit()
-        flash("User created!")
-        return redirect(url_for("admin.home"))
-    return render_template("admin/create_student.html")
+    form = StudentForm()
+    if form.validate_on_submit():
+        try:
+            student = Student()
+            student.first_name = form.first_name.data
+            student.last_name = form.last_name.data
+            student.student_id = form.student_id.data
+            student.date_of_birth = form.date_of_birth.data 
+            student.national_id = form.national_id.data
+            student.set_password(form.password.data)
+            db.session.add(student)
+            db.session.commit()
+            logger.info(f"Student {student.student_id} registered bt admin.")
+            flash("Student created!", "success")
+            return redirect(url_for("admin.home"))
+        except IntegrityError:
+            db.session.rollback()
+            logger.warning(f"Admin failed to create student. {student.student_id} already exists.")
+            flash("Student with that ID already exists", "danger")
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logger.error(f"Database error during student creation by admin: {e}")
+            flash("A database error occurred. Please try again.", "danger")
+    return render_template("admin/create_student.html", form=form)
 
 
 @admin_bp.route("/student/<int:id>/delete", methods=["POST", "GET"])
@@ -51,11 +75,18 @@ def create_student():
 def delete_student(id):
     student = Student.query.get_or_404(id)
     if request.method == "POST":
-        
-        db.session.delete(student)
-        db.session.commit()
-        flash("Student deleted!")
-        return redirect(url_for("admin.home"))
+       try:
+            db.session.delete(student)
+            db.session.commit()
+            logger.info(f"Student with ID {student.student_id} deleted by admin.")
+            flash("Student deleted!", "success")
+            return redirect(url_for("admin.home"))
+       except SQLAlchemyError as e:
+           db.session.rollback()
+           logger.error(f"Database error during student deletion by admin for student ID {student.student_id}: {e}")
+           flash("Database error occured, please try again.", "danger")
+           return(redirect(url_for("admin.show_students")))
+    
     return render_template("admin/delete_student.html", student=student) 
    
 @admin_bp.route("/student/<int:id>/edit", methods=["POST", "GET"])
@@ -63,15 +94,27 @@ def delete_student(id):
 @admin_required
 def edit_student(id):
     student = Student.query.get_or_404(id)
-    if request.method == "POST":
-        student.first_name = request.form["first_name"]
-        student.last_name = request.form["last_name"]
-        student.national_id = request.form["national_id"]
-        student.date_of_birth = datetime.datetime.strptime(request.form["date_of_birth"], "%Y-%m-%d").date()
-        db.session.commit()
-        flash("User updated successfully!")
-        return redirect(url_for("admin.home"))
-    return render_template("admin/edit_student.html", student=student)
+    form = StudentProfileForm(obj=student)
+    if form.validate_on_submit():
+        try:
+            student.first_name = form.first_name.data
+            student.last_name = form.last_name.data
+            student.national_id = form.national_id.data
+            student.date_of_birth = form.date_of_birth.data
+            db.session.commit()
+            logger.info(f"Student with ID {student.student_id} updated.")
+            flash("User updated successfully!", "success")
+            return redirect(url_for("admin.show_students"))
+        except IntegrityError:
+            db.session.rollback()
+            logger.warning(f"Admin failed to update student {student.student_id} .Student ID {form.student_id.data} already exists.")
+            flash("A student with that ID already exists.", "danger")
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logger.error(f"Database error occured during student update by admin for student {student.student_id}: {e}")
+            flash("Database error occured, please try again", "danger")
+            
+    return render_template("admin/edit_student.html", student=student, form=form)
 
 
 
@@ -79,54 +122,92 @@ def edit_student(id):
 @login_required
 @admin_required
 def show_courses():
-    courses = Course.query.options(joinedload(Course.teacher)).all()
+    logger.info("Admin accessed courses page.")
+    try:
+        courses = Course.query.options(joinedload(Course.teacher)).all()
+    except SQLAlchemyError as e:
+        logger.error(f"Database error occured while fetching courses: {e}")
+        flash("A database error occurred while fetching courses.", "danger")
+        courses = []
     return render_template("admin/courses.html", courses=courses)
 
 @admin_bp.route("/create/course", methods=["POST", "GET"])
 @login_required
 @admin_required
 def create_course():
-    if request.method == "POST":
-        course = Course()
-        course.course_id = request.form["course_id"]
-        course.course_name = request.form["course_name"]
-        course.course_unit = request.form["course_unit"]
-        course.teacher_id = request.form["teacher_id"]
-        course.capacity = request.form["capacity"]
-        course.start_date = datetime.datetime.strptime(request.form["start_date"], "%Y-%m-%d").date()
-        course.end_date = datetime.datetime.strptime(request.form["end_date"], "%Y-%m-%d").date()
-        # TODO: add validation for days
-        course.days = request.form["days"]
-        course.start_time = datetime.datetime.strptime(request.form["start_time"], "%H:%M").time()
-        course.end_time = datetime.datetime.strptime(request.form["end_time"], "%H:%M").time()
-        db.session.add(course)
-        db.session.commit()
-        flash(f"{course.course_id} added!")
-        return redirect(url_for("admin.home"))
-    teachers = Teacher.query.all()
-    return render_template("admin/create_course.html", teachers=teachers)
+    form = CourseForm()
+    form.teacher_id.choices = [(t.id, f"{t.first_name} {t.last_name}") for t in Teacher.query.all()]
+    if form.validate_on_submit():
+        try:
+            course = Course()
+            course.course_id = form.course_id.data
+            course.course_name = form.course_name.data
+            course.course_unit = form.course_unit.data
+            course.capacity = form.capacity.data
+            course.days = form.days.data
+            course.start_date = form.start_date.data
+            course.end_date = form.end_date.data
+            course.start_time = form.start_time.data
+            course.end_time = form.end_time.data
+            course.teacher_id = form.teacher_id.data
+            db.session.add(course)
+            db.session.commit()
+            logger.info(f"Course {course.course_id} created by admin.")
+            flash(f"{course.course_id} added!", "success")
+            return redirect(url_for("admin.home"))
+        except IntegrityError:
+            db.session.rollback()
+            logger.warning(f"Admin failed to create course. {form.course_id.data} already exists.")
+            flash("A course with that ID already exists.", "danger")
+        except ValueError as e:
+            db.session.rollback()
+            logger.warning(f"Admin failed to create course due to validation error: {e}")
+            flash(str(e), "danger")
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logger.error(f"Database error during course creation by admin: {e}")
+            flash("A database error occurred. Please try again.", "danger")
+
+    return render_template("admin/create_course.html", form=form)
 
 @admin_bp.route("/course/<int:id>/edit", methods=["POST", "GET"])
 @login_required
 @admin_required
 def edit_course(id):
     course = Course.query.get_or_404(id)
-    teachers = Teacher.query.all()
-    if request.method == "POST":
-        course.course_id = request.form["course_id"]
-        course.course_name = request.form["course_name"]
-        course.course_unit = request.form["course_unit"]
-        course.teacher_id = request.form["teacher_id"]
-        course.capacity = request.form["capacity"]
-        course.start_date = datetime.datetime.strptime(request.form["start_date"], "%Y-%m-%d").date()
-        course.end_date = datetime.datetime.strptime(request.form["end_date"], "%Y-%m-%d").date()
-        course.days = request.form["days"]
-        course.start_time = datetime.datetime.strptime(request.form["start_time"], "%H:%M").time()
-        course.end_time = datetime.datetime.strptime(request.form["end_time"], "%H:%M").time()
-        db.session.commit()
-        flash("Course updated!")
-        return redirect(url_for("admin.home"))
-    return render_template("admin/edit_course.html", course=course, teachers=teachers)
+    form = CourseForm(obj=course)
+    form.teacher_id.choices = [(t.id, f"{t.first_name} {t.last_name}") for t in Teacher.query.all()]
+    if form.validate_on_submit():
+        try:
+            course.course_id = form.course_id.data
+            course.course_name = form.course_name.data
+            course.course_unit = form.course_unit.data
+            course.capacity = form.capacity.data
+            course.days = form.days.data
+            course.start_time = form.start_time.data
+            course.end_time = form.end_time.data
+            course.start_date = form.start_date.data
+            course.end_date = form.end_date.data
+            course.teacher_id = form.teacher_id.data
+            
+            db.session.commit()
+            logger.info(f"Course {course.course_id} updated by admin.")
+            flash("Course updated!", "success")
+            return redirect(url_for("admin.home"))
+        except IntegrityError:
+            db.session.rollback()
+            logger.warning(f"Admin failed to update course. {form.course_id.data} already exists.")
+            flash("A course with that ID already exists.", "danger")
+        except ValueError as e:
+            db.session.rollback()
+            logger.warning(f"Admin failed to update course {course.course_id} due to validation error: {e}")
+            flash(str(e), "danger")
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logger.error(f"Database error during course update by admin for course {course.course_id}: {e}")
+            flash("A database error occurred. Please try again.", "danger")
+
+    return render_template("admin/edit_course.html", course=course, form=form)
 
 @admin_bp.route("/course/<int:id>/delete", methods=["POST", "GET"])
 @login_required
@@ -134,56 +215,93 @@ def edit_course(id):
 def delete_course(id):
     course = Course.query.get_or_404(id)
     if request.method == "POST":
-        from src.models.students_courses import StudentsCourses
-        enrollments = StudentsCourses.query.filter_by(course_id=course.id).all()
-        for enrollment in enrollments:
-            db.session.delete(enrollment)
-            
-        db.session.delete(course)
-        db.session.commit()
-        flash(f"{course.course_id} deleted!")
-        return redirect(url_for("admin.home"))
+        try:
+            from src.models.students_courses import StudentsCourses
+            enrollments = StudentsCourses.query.filter_by(course_id=course.id).all()
+            for enrollment in enrollments:
+                db.session.delete(enrollment)
+                
+            db.session.delete(course)
+            db.session.commit()
+            logger.info(f"Course {course.course_id} deleted by admin.")
+            flash(f"{course.course_id} deleted!", "success")
+            return redirect(url_for("admin.home"))
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logger.error(f"Database error during course deletion by admin for course {course.course_id}: {e}")
+            flash("A database error occurred. Please try again.", "danger")
+            return redirect(url_for("admin.show_courses"))
+
     return render_template("admin/delete_course.html", course=course)
 
 @admin_bp.route("/teachers")
 @login_required
 @admin_required
 def show_teachers():
-    teachers = Teacher.query.all()
+    logger.info("Admin visited the teachers page.")
+    try:
+        teachers = Teacher.query.all()
+    except SQLAlchemyError as e:
+        logger.error(f"Database error while fetching teachers: {e}")
+        flash("A database error occurred while fetching teachers.", "danger")
+        teachers = []
     return render_template("admin/teachers.html", teachers=teachers)
 
 @admin_bp.route("/teacher/create", methods=["POST", "GET"])
 @login_required
 @admin_required
 def create_teacher():
-    if request.method == "POST":
-        teacher = Teacher()
-        teacher.first_name = request.form["first_name"]
-        teacher.last_name = request.form["last_name"]
-        teacher.teacher_id = request.form["teacher_id"]
-        teacher.date_of_birth = datetime.datetime.strptime(request.form["date_of_birth"], "%Y-%m-%d").date()
-        teacher.national_id = request.form["national_id"]
-        teacher.set_password(request.form["password"])
-        db.session.add(teacher)
-        db.session.commit()
-        flash("Teacher created!")
-        return redirect(url_for("admin.home"))
-    return render_template("admin/create_teacher.html")
+    form = TeacherForm()
+    if form.validate_on_submit():
+        try:
+            teacher = Teacher()
+            teacher.teacher_id = form.teacher_id.data
+            teacher.first_name = form.first_name.data
+            teacher.last_name = form.last_name.data
+            teacher.national_id = form.national_id.data
+            teacher.date_of_birth = form.date_of_birth.data
+            teacher.set_password(form.password.data)
+            db.session.add(teacher)
+            db.session.commit()
+            logger.info(f"Teacher {teacher.teacher_id} created by admin.")
+            flash("Teacher created!", "success")
+            return redirect(url_for("admin.home"))
+        except IntegrityError:
+            db.session.rollback()
+            logger.warning(f"Admin failed to create teacher. {form.teacher_id.data} already exists.")
+            flash("A teacher with that ID already exists.", "danger")
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logger.error(f"Database error during teacher creation by admin: {e}")
+            flash("A database error occurred. Please try again.", "danger")
+    return render_template("admin/create_teacher.html", form=form)
 
 @admin_bp.route("/teacher/<int:id>/edit", methods=["POST", "GET"])
 @login_required
 @admin_required
 def edit_teacher(id):
     teacher = Teacher.query.get_or_404(id)
-    if request.method == "POST":
-        teacher.first_name = request.form["first_name"]
-        teacher.last_name = request.form["last_name"]
-        teacher.national_id = request.form["national_id"]
-        teacher.date_of_birth = datetime.datetime.strptime(request.form["date_of_birth"], "%Y-%m-%d").date()
-        db.session.commit()
-        flash("Teacher updated successfully!")
-        return redirect(url_for("admin.home"))
-    return render_template("admin/edit_teacher.html", teacher=teacher)
+    form = TeacherProfileForm(obj=teacher)
+    if form.validate_on_submit():
+        try:
+            teacher.teacher_id = form.teacher_id.data
+            teacher.first_name = form.first_name.data
+            teacher.last_name = form.last_name.data
+            teacher.national_id = form.national_id.data
+            teacher.date_of_birth = form.date_of_birth.data
+            db.session.commit()
+            logger.info(f"Teacher {teacher.teacher_id} updated by admin.")
+            flash("Teacher updated successfully!", "success")
+            return redirect(url_for("admin.home"))
+        except IntegrityError:
+            db.session.rollback()
+            logger.warning(f"Admin failed to update teacher. {form.teacher_id.data} already exists.")
+            flash("A teacher with that ID already exists.", "danger")
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logger.error(f"Database error during teacher update by admin for teacher {teacher.teacher_id}: {e}")
+            flash("A database error occurred. Please try again.", "danger")
+    return render_template("admin/edit_teacher.html", teacher=teacher, form=form)
 
 @admin_bp.route("/teacher/<int:id>/delete", methods=["POST", "GET"])
 @login_required
@@ -191,54 +309,87 @@ def edit_teacher(id):
 def delete_teacher(id):
     teacher = Teacher.query.get_or_404(id)
     if request.method == "POST":
-        db.session.delete(teacher)
-        db.session.commit()
-        flash("Teacher deleted!")
-        return redirect(url_for("admin.home"))
+        try:
+            db.session.delete(teacher)
+            db.session.commit()
+            logger.info(f"Teacher {teacher.teacher_id} deleted by admin.")
+            flash("Teacher deleted!", "success")
+            return redirect(url_for("admin.home"))
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logger.error(f"Database error during teacher deletion by admin for teacher {teacher.teacher_id}: {e}")
+            flash("A database error occurred. Please try again.", "danger")
+            return redirect(url_for("admin.show_teachers"))
+
     return render_template("admin/delete_teacher.html", teacher=teacher)
 
 @admin_bp.route("/enrollments")
 @login_required
 @admin_required
 def show_enrollments():
-    enrollments = StudentsCourses.query.join(StudentsCourses.student).join(StudentsCourses.course).all()
+    logger.info("Admin visited the enrollments page.")
+    try:
+        enrollments = StudentsCourses.query.join(StudentsCourses.student).join(StudentsCourses.course).all()
+    except SQLAlchemyError as e:
+        logger.error(f"Database error while fetching enrollments: {e}")
+        flash("A database error occurred while fetching enrollments.", "danger")
+        enrollments = []
     return render_template("admin/enrollments.html", enrollments=enrollments)
 
 @admin_bp.route("/enrollment/create", methods=["POST", "GET"])
 @login_required
 @admin_required
 def add_enrollment():
-    if request.method == "POST":
-        enrollment =  StudentsCourses()
-        enrollment.course_id = request.form["course_id"]
-        enrollment.student_id = request.form["student_id"]
-        enrollment.enrollment_date = datetime.datetime.strptime(request.form["enrollment_date"], "%Y-%m-%d").date()
-        enrollment.grade = request.form["grade"]
-        db.session.add(enrollment)
-        db.session.commit()
-        flash("Enrollment created successfully")
-        return redirect(url_for("admin.home"))
-    students = Student.query.all()
-    courses = Course.query.all()
-    return render_template("admin/create_enrollment.html", students=students, courses=courses)
+    form = EnrollmentForm()
+    form.student_id.choices = [(s.id, f"{s.first_name} {s.last_name}") for s in Student.query.all()]
+    form.course_id.choices = [(c.id, f"{c.course_name} ({c.course_id})") for c in Course.query.all()]
+    if form.validate_on_submit():
+        try:
+            enrollment = StudentsCourses(
+                student_id=form.student_id.data,
+                course_id=form.course_id.data,
+                enrollment_date=form.enrollment_date.data,
+                grade=form.grade.data
+            )
+            db.session.add(enrollment)
+            db.session.commit()
+            logger.info(f"Enrollment created by admin for student {enrollment.student_id} in course {enrollment.course_id}.")
+            flash("Enrollment created successfully", "success")
+            return redirect(url_for("admin.home"))
+        except IntegrityError:
+            db.session.rollback()
+            logger.warning(f"Admin failed to create enrollment. Student {form.student_id.data} is already enrolled in course {form.course_id.data}.")
+            flash("That student is already enrolled in that course.", "danger")
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logger.error(f"Database error during enrollment creation by admin: {e}")
+            flash("A database error occurred. Please try again.", "danger")
+    return render_template("admin/create_enrollment.html", form=form)
 
 @admin_bp.route("/enrollment/<int:student_id>/<int:course_id>/edit", methods=["POST", "GET"])
 @login_required
 @admin_required
 def edit_enrollment(student_id, course_id):
     enrollment = StudentsCourses.query.filter_by(student_id=student_id, course_id=course_id).first_or_404()
-    if request.method == "POST":
-        enrollment.course_id = request.form["course_id"]
-        enrollment.student_id = request.form["student_id"]
-        enrollment.enrollment_date = datetime.datetime.strptime(request.form["enrollment_date"], "%Y-%m-%d").date()
-        enrollment.grade = request.form["grade"]
-        db.session.commit()
-        flash("Enrollment updated!")
-        return redirect(url_for("admin.home"))
+    form = EnrollmentForm(obj=enrollment)
+    form.student_id.choices = [(s.id, f"{s.first_name} {s.last_name}") for s in Student.query.all()]
+    form.course_id.choices = [(c.id, f"{c.course_name} ({c.course_id})") for c in Course.query.all()]
+    if form.validate_on_submit():
+        try:
+            enrollment.student_id = form.student_id.data
+            enrollment.course_id = form.course_id.data
+            enrollment.enrollment_date = form.enrollment_date.data
+            enrollment.grade = form.grade.data
+            db.session.commit()
+            logger.info(f"Enrollment updated by admin for student {enrollment.student_id} in course {enrollment.course_id}.")
+            flash("Enrollment updated!", "success")
+            return redirect(url_for("admin.home"))
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logger.error(f"Database error during enrollment update by admin for student {enrollment.student_id} in course {enrollment.course_id}: {e}")
+            flash("A database error occurred. Please try again.", "danger")
     
-    students = Student.query.all()
-    courses = Course.query.all()
-    return render_template("admin/edit_enrollment.html", students=students, courses=courses, enrollment=enrollment)
+    return render_template("admin/edit_enrollment.html", enrollment=enrollment, form=form)
 
 @admin_bp.route("/enrollment/<int:student_id>/<int:course_id>/delete", methods=["POST", "GET"])
 @login_required
@@ -246,18 +397,31 @@ def edit_enrollment(student_id, course_id):
 def delete_enrollment(student_id, course_id):
     enrollment = StudentsCourses.query.filter_by(student_id=student_id, course_id=course_id).first_or_404()
     if request.method == "POST":
-        db.session.delete(enrollment)
-        db.session.commit()
-        flash("Enrollment deleted successfully!")
-        return redirect(url_for("admin.show_enrollments"))
+        try:
+            db.session.delete(enrollment)
+            db.session.commit()
+            logger.info(f"Enrollment deleted by admin for student {enrollment.student_id} in course {enrollment.course_id}.")
+            flash("Enrollment deleted successfully!", "success")
+            return redirect(url_for("admin.show_enrollments"))
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logger.error(f"Database error during enrollment deletion by admin for student {enrollment.student_id} in course {enrollment.course_id}: {e}")
+            flash("A database error occurred. Please try again.", "danger")
+            return redirect(url_for("admin.show_enrollments"))
     return render_template("admin/delete_enrollment.html", enrollment=enrollment)
 
 @admin_bp.route("/toggle-enrollment", methods=["POST"])
 @login_required
 @admin_required
 def toggle_enrollment():
-    setting = Setting.query.first()
-    setting.enrollment_open = not setting.enrollment_open
-    db.session.commit()
-    flash(f"Enrollment is now {'open' if setting.enrollment_open else 'closed'}.")
+    try:
+        setting = Setting.query.first()
+        setting.enrollment_open = not setting.enrollment_open
+        db.session.commit()
+        logger.info(f"Enrollment toggled to {'open' if setting.enrollment_open else 'closed'} by admin.")
+        flash(f"Enrollment is now {'open' if setting.enrollment_open else 'closed'}.")
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        logger.error(f"Database error while toggling enrollment: {e}")
+        flash("A database error occurred. Please try again.", "danger")
     return redirect(url_for("admin.home"))

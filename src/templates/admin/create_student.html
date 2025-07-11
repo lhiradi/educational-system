@@ -1,29 +1,32 @@
 {% extends "base.html" %}
 {% block title %}Create Student{% endblock %}
+
 {% block content %}
 <h1>Create Student</h1>
 <form method="post">
+    {{ form.hidden_tag() }}
+
     <label for="student_id">Student ID</label>
-    <input type="text" id="student_id" name="student_id" required>
+    {{ form.student_id(class="form-control") }}
 
     <label for="first_name">First Name</label>
-    <input type="text" id="first_name" name="first_name" required>
+    {{ form.first_name(class="form-control") }}
 
     <label for="last_name">Last Name</label>
-    <input type="text" id="last_name" name="last_name" required>
+    {{ form.last_name(class="form-control") }}
 
     <label for="national_id">National ID</label>
-    <input type="text" id="national_id" name="national_id" required>
+    {{ form.national_id(class="form-control") }}
 
-  
     <label for="date_of_birth">Date of Birth</label>
-    <input type="date" id="date_of_birth" name="date_of_birth" required>
-    
-    <label for="password">Password</label>
-    <input type="password" id="password" name="password" required>
+    {{ form.date_of_birth(class="form-control") }}
 
-    <button type="submit">Create Student</button>
+    <label for="password">Password</label>
+    {{ form.password(class="form-control") }}
+
+    {{ form.submit(class="btn") }}
 </form>
+
 <style>
 form {
     display: flex;
@@ -34,13 +37,13 @@ form {
 label {
     font-weight: 500;
 }
-input[type="text"], input[type="date"], input[type="password"] {
+.form-control {
     padding: 0.5rem;
     border: 1px solid #b2bec3;
     border-radius: 5px;
     font-size: 1rem;
 }
-button {
+.btn {
     background: #273c75;
     color: #fff;
     border: none;
@@ -51,7 +54,7 @@ button {
     margin-top: 1rem;
     transition: background 0.2s;
 }
-button:hover {
+.btn:hover {
     background: #40739e;
 }
 </style>

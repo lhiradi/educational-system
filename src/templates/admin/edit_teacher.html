@@ -3,23 +3,17 @@
 {% block content %}
 <h1>Edit Teacher</h1>
 <form method="post">
-    <label for="teacher_id">Teacher ID</label>
-    <input type="text" id="teacher_id" name="teacher_id" value="{{ teacher.teacher_id }}" readonly>
+    {{ form.hidden_tag() }}
 
-    <label for="first_name">First Name</label>
-    <input type="text" id="first_name" name="first_name" value="{{ teacher.first_name }}" required>
-
-    <label for="last_name">Last Name</label>
-    <input type="text" id="last_name" name="last_name" value="{{ teacher.last_name }}" required>
-
-    <label for="national_id">National ID</label>
-    <input type="text" id="national_id" name="national_id" value="{{ teacher.national_id }}" required>
-
-    <label for="date_of_birth">Date of Birth</label>
-    <input type="date" id="date_of_birth" name="date_of_birth" value="{{ teacher.date_of_birth }}" required>
+    {{ form.teacher_id.label }} {{ form.teacher_id() }}
+    {{ form.first_name.label }} {{ form.first_name() }}
+    {{ form.last_name.label }} {{ form.last_name() }}
+    {{ form.national_id.label }} {{ form.national_id() }}
+    {{ form.date_of_birth.label }} {{ form.date_of_birth() }}
 
     <button type="submit">Update Teacher</button>
 </form>
+
 <style>
 form {
     display: flex;

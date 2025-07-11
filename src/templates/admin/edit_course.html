@@ -3,45 +3,22 @@
 {% block content %}
 <h1>Edit Course</h1>
 <form method="post">
-    <label for="course_id">Course ID</label>
-    <input type="text" id="course_id" name="course_id" value="{{ course.course_id }}" required>
+    {{ form.hidden_tag() }}
 
-    <label for="course_name">Course Name</label>
-    <input type="text" id="course_name" name="course_name" value="{{ course.course_name }}" required>
-
-    <label for="course_unit">Course Unit</label>
-    <input type="number" id="course_unit" name="course_unit" min="1" value="{{ course.course_unit }}" required>
-
-    <label for="capacity">Capacity</label>
-    <input type="number" id="capacity" name="capacity" min="1" value="{{ course.capacity }}" required>
-
-    <label for="start_date">Start Date</label>
-    <input type="date" id="start_date" name="start_date" value="{{ course.start_date.strftime('%Y-%m-%d') if course.start_date else '' }}" required>
-
-    <label for="end_date">End Date</label>
-    <input type="date" id="end_date" name="end_date" value="{{ course.end_date.strftime('%Y-%m-%d') if course.end_date else '' }}" required>
-
-    <label for="days">Days (comma separated, e.g. Monday, Wednesday)</label>
-    <input type="text" id="days" name="days" value="{{ course.days }}" required>
-
-    <label for="start_time">Start Time</label>
-    <input type="time" id="start_time" name="start_time" value="{{ course.start_time.strftime('%H:%M') if course.start_time else '' }}" required>
-
-    <label for="end_time">End Time</label>
-    <input type="time" id="end_time" name="end_time" value="{{ course.end_time.strftime('%H:%M') if course.end_time else '' }}" required>
-
-    <label for="teacher_id">Teacher</label>
-    <select id="teacher_id" name="teacher_id" required>
-        <option value="" disabled>Select a teacher</option>
-        {% for teacher in teachers %}
-        <option value="{{ teacher.id }}" {% if teacher.id == course.teacher_id %}selected{% endif %}>
-            {{ teacher.first_name }} {{ teacher.last_name }}
-        </option>
-        {% endfor %}
-    </select>
+    {{ form.course_id.label }} {{ form.course_id() }}
+    {{ form.course_name.label }} {{ form.course_name() }}
+    {{ form.course_unit.label }} {{ form.course_unit() }}
+    {{ form.capacity.label }} {{ form.capacity() }}
+    {{ form.start_date.label }} {{ form.start_date() }}
+    {{ form.end_date.label }} {{ form.end_date() }}
+    {{ form.days.label }} {{ form.days() }}
+    {{ form.start_time.label }} {{ form.start_time() }}
+    {{ form.end_time.label }} {{ form.end_time() }}
+    {{ form.teacher_id.label }} {{ form.teacher_id() }}
 
     <button type="submit">Update Course</button>
 </form>
+
 <style>
 form {
     display: flex;
