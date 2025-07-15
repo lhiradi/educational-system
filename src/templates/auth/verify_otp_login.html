@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Enter OTP{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <h2>Enter Your OTP</h2>
+    <p>Check your email for the 6-digit One-Time Password.</p>
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.otp.label(class="form-control-label") }}
+            {{ form.otp(class="form-control form-control-lg") }}
+        </div>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-success btn-lg btn-block") }}
+        </div>
+    </form>
+</div>
+{% endblock %}

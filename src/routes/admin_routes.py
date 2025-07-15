@@ -50,6 +50,7 @@ def create_student():
             student.first_name = form.first_name.data
             student.last_name = form.last_name.data
             student.student_id = form.student_id.data
+            student.email = form.email.data
             student.date_of_birth = form.date_of_birth.data 
             student.national_id = form.national_id.data
             student.set_password(form.password.data)
@@ -99,6 +100,7 @@ def edit_student(id):
         try:
             student.first_name = form.first_name.data
             student.last_name = form.last_name.data
+            student.email = form.email.data
             student.national_id = form.national_id.data
             student.date_of_birth = form.date_of_birth.data
             db.session.commit()
@@ -258,6 +260,7 @@ def create_teacher():
             teacher.teacher_id = form.teacher_id.data
             teacher.first_name = form.first_name.data
             teacher.last_name = form.last_name.data
+            teacher.email = form.email.data
             teacher.national_id = form.national_id.data
             teacher.date_of_birth = form.date_of_birth.data
             teacher.set_password(form.password.data)
@@ -287,6 +290,7 @@ def edit_teacher(id):
             teacher.teacher_id = form.teacher_id.data
             teacher.first_name = form.first_name.data
             teacher.last_name = form.last_name.data
+            teacher.email = form.email.data
             teacher.national_id = form.national_id.data
             teacher.date_of_birth = form.date_of_birth.data
             db.session.commit()

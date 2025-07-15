@@ -24,4 +24,9 @@
         </div>
     </form>
 </div>
+<div class="border-top pt-3">
+    <small class="text-muted">
+        Forgot your password? <a href="{{ url_for('auth.request_otp_login') }}">Login with OTP instead</a>.
+    </small>
+</div>
 {% endblock %}

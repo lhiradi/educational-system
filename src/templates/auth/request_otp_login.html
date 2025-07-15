@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Login with ID{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <h2>Login with your ID</h2>
+    <p>Enter your Student or Teacher ID to receive a One-Time Password (OTP) via email.</p>
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.user_id.label(class="form-control-label") }}
+            {{ form.user_id(class="form-control form-control-lg") }}
+        </div>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-info btn-lg btn-block") }}
+        </div>
+    </form>
+    <div class="border-top pt-3">
+        <small class="text-muted">
+            Remember your password? <a href="{{ url_for('auth.login') }}">Login here</a>
+        </small>
+    </div>
+</div>
+{% endblock %}
