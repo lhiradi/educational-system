@@ -10,7 +10,7 @@ The application is designed with three distinct user roles, each with a specific
 
 ### 👤 Admin
 * **User Management:** Full CRUD (Create, Read, Update, Delete) capabilities for both student and teacher accounts.
-* **Course Management:** Full CRUD for courses, including assigning teachers, setting class capacity, and defining schedules.
+* **Course & Semester Management:** Full CRUD for courses and academic semesters.
 * **Enrollment Oversight:** Manually enroll or unenroll students from courses and view/edit all enrollment records.
 * **System Control:** Open or close the global enrollment period for all students with a single click.
 
@@ -22,9 +22,10 @@ The application is designed with three distinct user roles, each with a specific
 
 ### 🧑‍🎓 Student
 * **Course Enrollment:** Browse and enroll in available courses. The system automatically prevents time conflicts and manages course capacity.
-* **Personal Dashboard:** View enrolled courses, assigned teachers, schedules, and current grades.
-* **Unit Validation:** The system enforces academic rules, ensuring students enroll in a valid number of units (between 14 and 24).
-* **Finalize Enrollment:** A feature to lock in course selections for the academic term.
+* **Personal Dashboard:** View enrolled courses, assigned teachers, schedules, and current grades for the active semester.
+* **Academic Rules:** The system enforces a valid number of units for enrollment (between 14 and 24).
+* **Enrollment Finalization:** Lock in course selections for the academic term.
+* **Academic History:** View records of courses and grades from previous semesters.
 
 ### 🔐 Authentication
 * **Secure Role-Based Login:** Standard login using a User ID and password.
@@ -116,29 +117,28 @@ Follow these instructions to set up and run the project on your local machine.
 
 ---
 
+
 ## 📁 Project Structure
 
-The project is organized into modules for clarity and scalability, following standard Flask application design patterns.
+The project follows a modular structure for scalability and maintainability.
 
-
+```
 educational-system/
-│
 ├── app.py                # Main application entry point
 ├── requirements.txt      # List of Python dependencies
-├── .env                  # Environment variables (you create this)
-├── src/                  # Main source code
-│   ├── init.py         # Application factory, blueprint registration
-│   ├── configs/            # App configuration classes
-│   ├── extensions/         # Flask extension instances (db, login_manager)
-│   ├── forms/              # WTForms classes for data validation
+├── .env                  # Environment variables (created by user)
+├── src/                  # Main source code directory
+│   ├── __init__.py         # Application factory and setup
+│   ├── configs/            # Configuration files
+│   ├── extensions/         # Flask extension initializations
+│   ├── forms/              # WTForms classes
 │   ├── models/             # SQLAlchemy database models
-│   ├── routes/             # Flask blueprints defining URL routes
-│   ├── static/             # CSS, JavaScript, and image assets
-│   ├── templates/          # Jinja2 HTML templates for all pages
-│   └── utils/              # Helper functions (email, logging, etc.)
-│
+│   ├── routes/             # Flask Blueprints for app sections
+│   ├── static/             # Static assets (CSS, JS)
+│   ├── templates/          # Jinja2 HTML templates
+│   └── utils/              # Utility functions (email, logging)
 └── LICENSE               # Project license file
-
+```
 
 ---
 
