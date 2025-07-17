@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "_form_helpers.html" import render_field %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ title }}</h1>
+    <form method="POST" action="" novalidate>
+        {{ form.hidden_tag() }}
+        {{ render_field(form.year) }}
+        {{ render_field(form.term) }}
+        {{ render_field(form.start_date) }}
+        {{ render_field(form.end_date) }}
+        {{ form.submit(class="btn") }}
+    </form>
+    <a href="{{ url_for('admin.semesters') }}" class="btn-link">Back to Semesters</a>
+</div>
+{% endblock %}

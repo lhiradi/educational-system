@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Semester Details{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>Courses for {{ semester.year }} - {{ semester.term }}</h1>
+
+  {% if courses_info %}
+  <div class="table-container">
+    <table class="courses-table table">
+      <thead>
+        <tr>
+          <th>Course ID</th>
+          <th>Course Name</th>
+          <th>Teacher</th>
+          <th>Grade</th>
+          <th>Units</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for course, grade, teacher in courses_info %}
+        <tr>
+          <td>{{ course.course_id }}</td>
+          <td>{{ course.course_name }}</td>
+          <td>{{ teacher }}</td>
+          <td>{{ grade if grade is not none else "N/A" }}</td>
+          <td>{{ course.course_unit }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p>You were not enrolled in any courses for this semester.</p>
+  {% endif %}
+  
+  <a href="{{ url_for('student.semester_history') }}" class="btn">Back to Semester History</a>
+</div>
+{% endblock %}

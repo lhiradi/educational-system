@@ -24,7 +24,8 @@ def teacher_home():
 @teacher_required
 def show_courses():
     try:
-        courses = Course.query.filter_by(teacher_id=current_user.id).all()
+        page = request.args.get("page", 1, type=int)
+        courses = Course.query.filter_by(teacher_id=current_user.id).paginate(page=page, per_page=10)
         logger.info(f"Teacher {current_user.teacher_id} viewed their courses.")
     except SQLAlchemyError as e:
         logger.error(f"Database error fetching courses for teacher {current_user.teacher_id}: {e}")

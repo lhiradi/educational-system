@@ -18,6 +18,12 @@ class Student(BaseModel, UserMixin):
         back_populates='student',
         cascade="all, delete-orphan"
     )
+    
+    semester_links = db.relationship(
+        'StudentSemester',
+        back_populates='student',
+        cascade="all, delete-orphan"
+    )
 
     @property
     def user_type(self):

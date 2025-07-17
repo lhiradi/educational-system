@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% from "macros/_pagination.html" import render_pagination %}
+
 {% block title %}All Courses{% endblock %}
 {% block content %}
 <p><a href="{{ url_for('admin.home') }}" class="btn btn-primary">Admin Home</a></p>
@@ -21,7 +23,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for course in courses %}
+        {% for course in courses.items %}
         <tr>
             <td>{{ course.course_id }}</td>
             <td>{{ course.course_name }}</td>
@@ -41,4 +43,6 @@
     </tbody>
 </table>
 </div>
+
+{{ render_pagination(courses, 'admin.show_courses') }}
 {% endblock %}

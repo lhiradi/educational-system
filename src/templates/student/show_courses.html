@@ -4,7 +4,11 @@
 
 {% block content %}
 <div class="container">
-  <h1>My Courses</h1>
+  {% if current_semester %}
+    <h1>My Courses for {{ current_semester.year }} {{ current_semester.term }}</h1>
+  {% else %}
+    <h1>My Courses</h1>
+  {% endif %}
 
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -58,7 +62,7 @@
       <button type="submit" class="btn">Finalize Enrollment</button>
   </form>
   {% else %}
-  <p>You are not enrolled in any courses.</p>
+  <p>You are not enrolled in any courses for the current semester.</p>
   {% endif %}
 
   <h2>Enroll in a New Course</h2>
@@ -73,7 +77,10 @@
     <button type="submit" class="btn enroll-button">Enroll</button>
   </form>
   {% else %}
-  <p>No available courses to enroll.</p>
+  <p>No available courses to enroll in for the current semester.</p>
   {% endif %}
+
+  <hr>
+  <a href="{{ url_for('student.semester_history') }}" class="btn">View Semester History</a>
 </div>
 {% endblock %}

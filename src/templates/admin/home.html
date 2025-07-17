@@ -6,6 +6,7 @@
 <p><a href="{{ url_for('admin.show_courses') }}" class="btn">Manage Courses</a></p>
 <p><a href="{{ url_for('admin.show_teachers') }}" class="btn">Manage Teachers</a></p>
 <p><a href="{{ url_for('admin.show_enrollments') }}" class="btn">Manage Enrollments</a></p>
+<p><a href="{{ url_for('admin.semesters') }}" class="btn">Manage Semesters</a></p>
 <p>Enrollment is currently: <strong>{{ 'OPEN' if setting.enrollment_open else 'CLOSED' }}</strong></p>
 <form method="post" action="{{ url_for('admin.toggle_enrollment') }}">
     <button type="submit">

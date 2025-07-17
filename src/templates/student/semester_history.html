@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Semester History{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>Semester History</h1>
+  
+  {% if semesters %}
+  <div class="list-group">
+    {% for semester in semesters %}
+      <a href="{{ url_for('student.semester_details', semester_id=semester.id) }}" class="list-group-item list-group-item-action">
+        {{ semester.year }} - {{ semester.term }}
+      </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p>You have no semester history.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -6,4 +6,5 @@
 <h1>Welcome, {{ current_user.first_name }} {{ current_user.last_name }}</h1>
 <p>This is your student home page.</p>
 <p><a href="{{ url_for('student.show_courses') }}" class="btn">View your courses</a></p>
+<p><a href="{{ url_for('student.semester_history') }}" class="btn">View Semester History</a></p>
 {% endblock %}

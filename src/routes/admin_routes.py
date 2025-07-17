@@ -6,8 +6,10 @@ from src.extensions import admin_required
 from src.models.student import Student
 from src.models.course import Course
 from src.models.teacher import Teacher
+from src.models.semester import Semester
 from src.forms.student_form import StudentForm, StudentProfileForm
 from src.forms.course_form import CourseForm
+from src.forms.semester_form import SemesterForm
 from src.forms.teacher_form import TeacherForm, TeacherProfileForm
 from src.forms.enrollment_form import EnrollmentForm
 from src.models.students_courses import StudentsCourses
@@ -32,7 +34,8 @@ def home():
 def show_students():
     logger.info("Admin visited the students page.")
     try:
-        students = Student.query.all()
+        page = request.args.get("page", 1, type=int)
+        students = Student.query.paginate(page=page, per_page=10)
     except SQLAlchemyError as e:
         logger.error(f"Database error during fetching students: {e}")
         flash("A database error occurred while fetching students.", "danger")
@@ -126,7 +129,8 @@ def edit_student(id):
 def show_courses():
     logger.info("Admin accessed courses page.")
     try:
-        courses = Course.query.options(joinedload(Course.teacher)).all()
+        page = request.args.get("page", 1, type=int)
+        courses = Course.query.options(joinedload(Course.teacher)).paginate(page=page, per_page=10)
     except SQLAlchemyError as e:
         logger.error(f"Database error occured while fetching courses: {e}")
         flash("A database error occurred while fetching courses.", "danger")
@@ -242,7 +246,8 @@ def delete_course(id):
 def show_teachers():
     logger.info("Admin visited the teachers page.")
     try:
-        teachers = Teacher.query.all()
+        page = request.args.get("page", 1, type=int)
+        teachers = Teacher.query.paginate(page=page, per_page=10)
     except SQLAlchemyError as e:
         logger.error(f"Database error while fetching teachers: {e}")
         flash("A database error occurred while fetching teachers.", "danger")
@@ -333,7 +338,8 @@ def delete_teacher(id):
 def show_enrollments():
     logger.info("Admin visited the enrollments page.")
     try:
-        enrollments = StudentsCourses.query.join(StudentsCourses.student).join(StudentsCourses.course).all()
+        page = request.args.get("page", 1, type=int)
+        enrollments = StudentsCourses.query.join(StudentsCourses.student).join(StudentsCourses.course).paginate(page=page, per_page=10)
     except SQLAlchemyError as e:
         logger.error(f"Database error while fetching enrollments: {e}")
         flash("A database error occurred while fetching enrollments.", "danger")
@@ -347,11 +353,13 @@ def add_enrollment():
     form = EnrollmentForm()
     form.student_id.choices = [(s.id, f"{s.first_name} {s.last_name}") for s in Student.query.all()]
     form.course_id.choices = [(c.id, f"{c.course_name} ({c.course_id})") for c in Course.query.all()]
+    form.semester_id.choices = [(s.id, f"{s.year} ({s.term})") for s in Semester.query.all()]
     if form.validate_on_submit():
         try:
             enrollment = StudentsCourses(
                 student_id=form.student_id.data,
                 course_id=form.course_id.data,
+                semester_id=form.semester_id.data,
                 enrollment_date=form.enrollment_date.data,
                 grade=form.grade.data
             )
@@ -378,10 +386,12 @@ def edit_enrollment(student_id, course_id):
     form = EnrollmentForm(obj=enrollment)
     form.student_id.choices = [(s.id, f"{s.first_name} {s.last_name}") for s in Student.query.all()]
     form.course_id.choices = [(c.id, f"{c.course_name} ({c.course_id})") for c in Course.query.all()]
+    form.semester_id.choices = [(s.id, f"{s.year} ({s.term})") for s in Semester.query.all()]
     if form.validate_on_submit():
         try:
             enrollment.student_id = form.student_id.data
             enrollment.course_id = form.course_id.data
+            enrollment.semester_id = form.semester_id.data
             enrollment.enrollment_date = form.enrollment_date.data
             enrollment.grade = form.grade.data
             db.session.commit()
@@ -429,3 +439,84 @@ def toggle_enrollment():
         logger.error(f"Database error while toggling enrollment: {e}")
         flash("A database error occurred. Please try again.", "danger")
     return redirect(url_for("admin.home"))
+
+@admin_bp.route("/semesters")
+@login_required
+@admin_required
+def semesters():
+    try:
+        all_semesters = Semester.query.order_by(Semester.year.desc(), Semester.start_date.desc()).all()
+        logger.info("Admin successfully retrieved the list of semesters.")
+        return render_template("admin/semesters.html", semesters=all_semesters)
+    except SQLAlchemyError as e:
+        logger.error(f"Database error while fetching semesters: {e}")
+        flash("A database error occurred while fetching the list of semesters. Please try again later.", "danger")
+        return render_template("admin/semesters.html", semesters=[])
+
+
+@admin_bp.route("/semesters/create", methods=["GET", "POST"])
+@login_required
+@admin_required
+def create_semester():
+    form = SemesterForm()
+    if form.validate_on_submit():
+        try:
+            new_semester = Semester(
+                year=form.year.data,
+                term=form.term.data,
+                start_date=form.start_date.data,
+                end_date=form.end_date.data
+            )
+            db.session.add(new_semester)
+            db.session.commit()
+            logger.info(f"Admin created a new semester: {new_semester.year} {new_semester.term}")
+            flash("Semester created successfully.", "success")
+            return redirect(url_for("admin.semesters"))
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logger.error(f"Database error during semester creation: {e}")
+            flash("A database error occurred. Could not create the semester.", "danger")
+    return render_template("admin/create_semester.html", form=form, title="Create Semester")
+
+
+@admin_bp.route("/semesters/edit/<int:semester_id>", methods=["GET", "POST"])
+@login_required
+@admin_required
+def edit_semester(semester_id):
+    semester = Semester.query.get_or_404(semester_id)
+    form = SemesterForm(obj=semester)
+    if form.validate_on_submit():
+        try:
+            semester.year = form.year.data
+            semester.term = form.term.data
+            semester.start_date = form.start_date.data
+            semester.end_date = form.end_date.data
+            db.session.commit()
+            logger.info(f"Admin updated semester {semester_id}.")
+            flash("Semester updated successfully.", "success")
+            return redirect(url_for("admin.semesters"))
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logger.error(f"Database error while updating semester {semester_id}: {e}")
+            flash("A database error occurred. Could not update the semester.", "danger")
+    return render_template("admin/edit_semester.html", form=form, semester=semester, title="Edit Semester")
+
+
+@admin_bp.route("/semesters/delete/<int:semester_id>", methods=["GET", "POST"])
+@login_required
+@admin_required
+def delete_semester(semester_id):
+    semester = Semester.query.get_or_404(semester_id)
+    if request.method == "POST":
+        try:
+            db.session.delete(semester)
+            db.session.commit()
+            logger.info(f"Admin deleted semester {semester_id}.")
+            flash("Semester has been deleted.", "success")
+            return redirect(url_for("admin.semesters"))
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logger.error(f"Database error while deleting semester {semester_id}: {e}")
+            flash("A database error occurred. The semester could not be deleted.", "danger")
+            return redirect(url_for("admin.semesters"))
+    return render_template("admin/delete_semester.html", semester=semester)

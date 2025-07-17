@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Semesters{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Manage Semesters</h1>
+    <a href="{{ url_for('admin.create_semester') }}" class="btn">Create New Semester</a>
+    
+    {% if semesters %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Year</th>
+                <th>Term</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for semester in semesters %}
+            <tr>
+                <td>{{ semester.year }}</td>
+                <td>{{ semester.term }}</td>
+                <td>{{ semester.start_date.strftime('%Y-%m-%d') }}</td>
+                <td>{{ semester.end_date.strftime('%Y-%m-%d') }}</td>
+                <td>
+                    <a href="{{ url_for('admin.edit_semester', semester_id=semester.id) }}" class="btn-sm">Edit</a>
+                    <a href="{{ url_for('admin.delete_semester', semester_id=semester.id) }}" class="btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No semesters found. <a href="{{ url_for('admin.create_semester') }}">Create one now</a>.</p>
+    {% endif %}
+</div>
+{% endblock %}

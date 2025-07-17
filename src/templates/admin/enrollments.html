@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% from "macros/_pagination.html" import render_pagination %}
+
 {% block title %}Enrollments{% endblock %}
 {% block content %}
 <h1>Enrollments</h1>
@@ -28,4 +30,6 @@
         {% endfor %}
     </tbody>
 </table>
+
+{{ render_pagination(enrollments, 'admin.show_enrollments') }}
 {% endblock %}

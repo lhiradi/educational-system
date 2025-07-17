@@ -6,3 +6,4 @@ email-validator
 Flask-Login
 Flask-Mail
 itsdangerous
+pytest

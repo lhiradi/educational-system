@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% from "macros/_pagination.html" import render_pagination %}
+
 {% block title %}All Teachers{% endblock %}
 {% block content %}
 <p><a href="{{ url_for('admin.home') }}" class="btn btn-primary" style="margin-bottom: 1rem; display: inline-block;">Admin Home</a></p>
@@ -16,7 +18,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for teacher in teachers %}
+        {% for teacher in teachers.items %}
         <tr>
             <td>{{ teacher.teacher_id }}</td>
             <td>{{ teacher.first_name }}</td>
@@ -31,4 +33,6 @@
         {% endfor %}
     </tbody>
 </table>
+
+{{ render_pagination(teachers, 'admin.show_teachers') }}
 {% endblock %}

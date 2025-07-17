@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Semester{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Delete Semester</h1>
+    <p>Are you sure you want to delete the semester: <strong>{{ semester.year }} {{ semester.term }}</strong>?</p>
+    <p class="warning">This action cannot be undone and may affect associated student enrollment records.</p>
+    <form method="POST" action="">
+        <input type="submit" value="Confirm Delete" class="btn btn-danger">
+        <a href="{{ url_for('admin.semesters') }}" class="btn">Cancel</a>
+    </form>
+</div>
+{% endblock %}
