@@ -1,40 +1,29 @@
 {% extends "base.html" %}
 {% block title %}Delete Student{% endblock %}
 {% block content %}
-<h1>Delete Student</h1>
-<p>Are you sure you want to delete student {{ student.first_name }} {{ student.last_name }} (ID: {{ student.student_id }})?</p>
-<form method="post">
-    <button type="submit">Delete Student</button>
-    <a href="{{ url_for('teacher.show_students') }}" style="margin-left: 1rem;">Cancel</a>
-</form>
-<style>
-form {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    max-width: 400px;
-}
-button {
-    background: #c0392b;
-    color: #fff;
-    border: none;
-    padding: 0.7rem 1.2rem;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-    margin-top: 1rem;
-    transition: background 0.2s;
-}
-button:hover {
-    background: #e74c3c;
-}
-a {
-    text-decoration: none;
-    color: #273c75;
-    font-weight: 500;
-}
-a:hover {
-    text-decoration: underline;
-}
-</style>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+      <div class="card shadow-sm mt-5">
+        <div class="card-header bg-danger text-white">
+          <h2 class="mb-0"><i class="bi bi-trash"></i> Delete Student</h2>
+        </div>
+        <div class="card-body text-center">
+          <p class="mb-4 fs-5">
+            Are you sure you want to delete student <strong>{{ student.first_name }} {{ student.last_name }}</strong>
+            (ID: <span class="text-danger">{{ student.student_id }}</span>)?
+          </p>
+          <form method="post" class="d-flex justify-content-center gap-3">
+            <button type="submit" class="btn btn-danger btn-lg">
+              <i class="bi bi-trash"></i> Delete Student
+            </button>
+            <a href="{{ url_for('teacher.show_students') }}" class="btn btn-secondary btn-lg">
+              Cancel
+            </a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

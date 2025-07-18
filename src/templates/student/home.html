@@ -3,8 +3,28 @@
 {% block title %}Student Home{% endblock %}
 
 {% block content %}
-<h1>Welcome, {{ current_user.first_name }} {{ current_user.last_name }}</h1>
-<p>This is your student home page.</p>
-<p><a href="{{ url_for('student.show_courses') }}" class="btn">View your courses</a></p>
-<p><a href="{{ url_for('student.semester_history') }}" class="btn">View Semester History</a></p>
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-success text-white">
+                <h2 class="mb-0"><i class="bi bi-person"></i> Student Dashboard</h2>
+            </div>
+            <div class="card-body">
+                <h3 class="fw-bold mb-3">Welcome, {{ current_user.first_name }} {{ current_user.last_name }}</h3>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <a href="{{ url_for('student.show_courses') }}" class="btn btn-primary w-100 py-3">
+                            <i class="bi bi-journal-bookmark"></i> View Your Courses
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{ url_for('student.semester_history') }}" class="btn btn-info w-100 py-3">
+                            <i class="bi bi-clock-history"></i> View Semester History
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

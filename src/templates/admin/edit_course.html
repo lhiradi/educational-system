@@ -1,53 +1,70 @@
 {% extends "base.html" %}
-{% block title %}Edit Course{% endblock %}
+{% block title %}{{ 'Create' if 'create' in request.endpoint else 'Edit' }} Course{% endblock %}
 {% block content %}
-<h1>Edit Course</h1>
-<form method="post">
-    {{ form.hidden_tag() }}
-
-    {{ form.course_id.label }} {{ form.course_id() }}
-    {{ form.course_name.label }} {{ form.course_name() }}
-    {{ form.course_unit.label }} {{ form.course_unit() }}
-    {{ form.capacity.label }} {{ form.capacity() }}
-    {{ form.start_date.label }} {{ form.start_date() }}
-    {{ form.end_date.label }} {{ form.end_date() }}
-    {{ form.days.label }} {{ form.days() }}
-    {{ form.start_time.label }} {{ form.start_time() }}
-    {{ form.end_time.label }} {{ form.end_time() }}
-    {{ form.teacher_id.label }} {{ form.teacher_id() }}
-
-    <button type="submit">Update Course</button>
-</form>
-
-<style>
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    max-width: 400px;
-}
-label {
-    font-weight: 500;
-}
-input[type="text"], input[type="number"], input[type="date"], select {
-    padding: 0.5rem;
-    border: 1px solid #b2bec3;
-    border-radius: 5px;
-    font-size: 1rem;
-}
-button {
-    background: #273c75;
-    color: #fff;
-    border: none;
-    padding: 0.7rem 1.2rem;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-    margin-top: 1rem;
-    transition: background 0.2s;
-}
-button:hover {
-    background: #40739e;
-}
-</style>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h1 class="mb-0 h4">{{ 'Create' if 'create' in request.endpoint else 'Edit' }} Course</h1>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.course_id.label(class="form-label") }}
+                            {{ form.course_id(class="form-control") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.course_name.label(class="form-label") }}
+                            {{ form.course_name(class="form-control") }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.course_unit.label(class="form-label") }}
+                            {{ form.course_unit(class="form-control") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.capacity.label(class="form-label") }}
+                            {{ form.capacity(class="form-control") }}
+                        </div>
+                    </div>
+                    <div class="row">
+                         <div class="col-md-6 mb-3">
+                            {{ form.start_date.label(class="form-label") }}
+                            {{ form.start_date(class="form-control") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.end_date.label(class="form-label") }}
+                            {{ form.end_date(class="form-control") }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        {{ form.days.label(class="form-label") }}
+                        {{ form.days(class="form-control") }}
+                    </div>
+                     <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.start_time.label(class="form-label") }}
+                            {{ form.start_time(class="form-control") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.end_time.label(class="form-label") }}
+                            {{ form.end_time(class="form-control") }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        {{ form.teacher_id.label(class="form-label") }}
+                        {{ form.teacher_id(class="form-select") }}
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <a href="{{ url_for('admin.show_courses') }}" class="btn btn-secondary me-2">Cancel</a>
+                        <button type="submit" class="btn btn-success">{{ 'Create' if 'create' in request.endpoint else 'Update' }} Course</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

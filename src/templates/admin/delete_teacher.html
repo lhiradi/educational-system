@@ -1,39 +1,20 @@
 {% extends "base.html" %}
 {% block title %}Delete Teacher{% endblock %}
 {% block content %}
-<h1>Delete Teacher</h1>
-<p>Are you sure you want to delete teacher {{ teacher.first_name }} {{ teacher.last_name }} (ID: {{ teacher.teacher_id }})?</p>
-<form method="post">
-    <button type="submit">Confirm Delete</button>
-    <a href="{{ url_for('admin.show_teachers') }}">Cancel</a>
-</form>
-<style>
-button {
-    background: #c0392b;
-    color: #fff;
-    border: none;
-    padding: 0.7rem 1.2rem;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-    margin-right: 1rem;
-    transition: background 0.2s;
-}
-button:hover {
-    background: #e74c3c;
-}
-a {
-    font-size: 1rem;
-    color: #273c75;
-    text-decoration: none;
-    padding: 0.7rem 1.2rem;
-    border-radius: 5px;
-    border: 1px solid #273c75;
-    transition: background 0.2s, color 0.2s;
-}
-a:hover {
-    background: #273c75;
-    color: #fff;
-}
-</style>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm mt-5">
+            <div class="card-header bg-danger text-white">
+                <h1 class="mb-0 h4">Delete Teacher</h1>
+            </div>
+            <div class="card-body text-center">
+                <p class="fs-5">Are you sure you want to delete teacher <strong>{{ teacher.first_name }} {{ teacher.last_name }}</strong> (ID: {{ teacher.teacher_id }})?</p>
+                <form method="post" class="d-inline">
+                    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                    <a href="{{ url_for('admin.show_teachers') }}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

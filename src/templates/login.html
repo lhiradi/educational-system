@@ -1,32 +1,42 @@
 {% extends "base.html" %}
 {% block title %}Login{% endblock %}
 {% block content %}
-<div class="login-container">
-    <h2>Login</h2>
-    <form method="POST" id="loginForm" novalidate>
-        {{ form.hidden_tag() }}
-        <div>
-            {{ form.user_id.label }}<br>
-            {{ form.user_id(class="input-field") }}
-            {% for error in form.user_id.errors %}
-                <span class="error">{{ error }}</span>
-            {% endfor %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-sm mt-5">
+        <div class="card-header bg-primary text-white text-center">
+          <h2 class="mb-0"><i class="bi bi-box-arrow-in-right"></i> Login</h2>
         </div>
-        <div>
-            {{ form.password.label }}<br>
-            {{ form.password(class="input-field") }}
-            {% for error in form.password.errors %}
-                <span class="error">{{ error }}</span>
-            {% endfor %}
+        <div class="card-body">
+          <form method="POST" id="loginForm" novalidate>
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+              {{ form.user_id.label(class="form-label") }}
+              {{ form.user_id(class="form-control") }}
+              {% for error in form.user_id.errors %}
+                <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+            <div class="mb-3">
+              {{ form.password.label(class="form-label") }}
+              {{ form.password(class="form-control") }}
+              {% for error in form.password.errors %}
+                <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+            <div class="d-grid gap-2">
+              {{ form.submit(class="btn btn-success btn-lg") }}
+            </div>
+          </form>
         </div>
-        <div>
-            {{ form.submit(class="btn") }}
+        <div class="card-footer text-center bg-light">
+          <small class="text-muted">
+            Forgot your password? <a href="{{ url_for('auth.request_otp_login') }}">Login with OTP instead</a>.
+          </small>
         </div>
-    </form>
-</div>
-<div class="border-top pt-3">
-    <small class="text-muted">
-        Forgot your password? <a href="{{ url_for('auth.request_otp_login') }}">Login with OTP instead</a>.
-    </small>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

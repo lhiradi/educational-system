@@ -3,13 +3,29 @@
 {% block title %}Teacher Home{% endblock %}
 
 {% block content %}
-<h1>Welcome, {{ teacher.name }}!</h1>
-
-<p>This is your home page where you can manage your courses and students.</p>
-
-<ul>
-    <li><a href="{{ url_for('teacher.show_courses') }}" class="btn">My Courses</a></li>
-    <li><a href="{{ url_for('teacher.show_students') }}" class="btn">My Students</a></li>
-</ul>
-
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h2 class="mb-0"><i class="bi bi-person-video2"></i> Teacher Dashboard</h2>
+            </div>
+            <div class="card-body">
+                <h3 class="fw-bold mb-3">Welcome, {{ teacher.name }}!</h3>
+                <p class="mb-4">This is your home page where you can manage your courses and students.</p>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <a href="{{ url_for('teacher.show_courses') }}" class="btn btn-primary w-100 py-3">
+                            <i class="bi bi-journal-bookmark"></i> My Courses
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{ url_for('teacher.show_students') }}" class="btn btn-success w-100 py-3">
+                            <i class="bi bi-people"></i> My Students
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

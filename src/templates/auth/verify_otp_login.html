@@ -2,18 +2,33 @@
 {% block title %}Enter OTP{% endblock %}
 
 {% block content %}
-<div class="login-container">
-    <h2>Enter Your OTP</h2>
-    <p>Check your email for the 6-digit One-Time Password.</p>
-    <form method="POST" action="">
-        {{ form.hidden_tag() }}
-        <div class="form-group">
-            {{ form.otp.label(class="form-control-label") }}
-            {{ form.otp(class="form-control form-control-lg") }}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-sm mt-5">
+        <div class="card-header bg-success text-white text-center">
+          <h2 class="mb-0"><i class="bi bi-shield-lock"></i> Enter Your OTP</h2>
         </div>
-        <div class="form-group">
-            {{ form.submit(class="btn btn-success btn-lg btn-block") }}
+        <div class="card-body">
+          <p class="mb-4 text-center">Check your email for the 6-digit One-Time Password.</p>
+          <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+              {{ form.otp.label(class="form-label") }}
+              {{ form.otp(class="form-control form-control-lg") }}
+            </div>
+            <div class="d-grid gap-2">
+              {{ form.submit(class="btn btn-success btn-lg") }}
+            </div>
+          </form>
         </div>
-    </form>
+        <div class="card-footer text-center bg-light">
+          <small class="text-muted">
+            Didn't receive the code? <a href="{{ url_for('auth.request_otp_login') }}">Request OTP again</a>
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

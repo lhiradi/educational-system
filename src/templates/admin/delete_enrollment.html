@@ -1,16 +1,25 @@
 {% extends "base.html" %}
 {% block title %}Delete Enrollment{% endblock %}
 {% block content %}
-<h1>Delete Enrollment</h1>
-<p>Are you sure you want to delete the following enrollment?</p>
-<ul>
-    <li><strong>Student:</strong> {{ enrollment.student.first_name }} {{ enrollment.student.last_name }}</li>
-    <li><strong>Course:</strong> {{ enrollment.course.course_name }} ({{ enrollment.course.course_id }})</li>
-    <li><strong>Enrollment Date:</strong> {{ enrollment.enrollment_date.strftime('%Y-%m-%d') }}</li>
-    <li><strong>Grade:</strong> {{ enrollment.grade }}</li>
-</ul>
-<form method="post">
-    <button type="submit">Confirm Delete</button>
-    <a href="{{ url_for('admin.show_enrollments') }}">Cancel</a>
-</form>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm mt-5">
+            <div class="card-header bg-danger text-white">
+                <h1 class="mb-0 h4">Delete Enrollment</h1>
+            </div>
+            <div class="card-body">
+                <p>Are you sure you want to delete the following enrollment?</p>
+                <ul class="list-group mb-3">
+                    <li class="list-group-item"><strong>Student:</strong> {{ enrollment.student.first_name }} {{ enrollment.student.last_name }}</li>
+                    <li class="list-group-item"><strong>Course:</strong> {{ enrollment.course.course_name }} ({{ enrollment.course.course_id }})</li>
+                    <li class="list-group-item"><strong>Date:</strong> {{ enrollment.enrollment_date.strftime('%Y-%m-%d') }}</li>
+                </ul>
+                <form method="post" class="text-center">
+                    <a href="{{ url_for('admin.show_enrollments') }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

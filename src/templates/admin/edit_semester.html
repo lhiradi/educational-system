@@ -4,16 +4,26 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1>{{ title }}: {{ semester.year }} {{ semester.term }}</h1>
-    <form method="POST" action="" novalidate>
-        {{ form.hidden_tag() }}
-        {{ render_field(form.year) }}
-        {{ render_field(form.term) }}
-        {{ render_field(form.start_date) }}
-        {{ render_field(form.end_date) }}
-        {{ form.submit(class="btn") }}
-    </form>
-    <a href="{{ url_for('admin.semesters') }}" class="btn-link">Back to Semesters</a>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h1 class="mb-0 h4">{{ title }}</h1>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="" novalidate>
+                    {{ form.hidden_tag() }}
+                    {{ render_field(form.year, class="form-control") }}
+                    {{ render_field(form.term, class="form-select") }}
+                    {{ render_field(form.start_date, class="form-control") }}
+                    {{ render_field(form.end_date, class="form-control") }}
+                    <div class="d-flex justify-content-end">
+                         <a href="{{ url_for('admin.semesters') }}" class="btn btn-secondary me-2">Cancel</a>
+                        {{ form.submit(class="btn btn-success") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -2,63 +2,50 @@
 {% block title %}Create Student{% endblock %}
 
 {% block content %}
-<h1>Create Student</h1>
-<form method="post">
-    {{ form.hidden_tag() }}
-
-    <label for="student_id">Student ID</label>
-    {{ form.student_id(class="form-control") }}
-
-    <label for="first_name">First Name</label>
-    {{ form.first_name(class="form-control") }}
-
-    <label for="last_name">Last Name</label>
-    {{ form.last_name(class="form-control") }}
-
-    <label for="email">Email</label>
-    {{ form.email(class="form-control") }}
-
-    <label for="national_id">National ID</label>
-    {{ form.national_id(class="form-control") }}
-
-    <label for="date_of_birth">Date of Birth</label>
-    {{ form.date_of_birth(class="form-control") }}
-
-    <label for="password">Password</label>
-    {{ form.password(class="form-control") }}
-
-    {{ form.submit(class="btn") }}
-</form>
-
-<style>
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    max-width: 400px;
-}
-label {
-    font-weight: 500;
-}
-.form-control {
-    padding: 0.5rem;
-    border: 1px solid #b2bec3;
-    border-radius: 5px;
-    font-size: 1rem;
-}
-.btn {
-    background: #273c75;
-    color: #fff;
-    border: none;
-    padding: 0.7rem 1.2rem;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-    margin-top: 1rem;
-    transition: background 0.2s;
-}
-.btn:hover {
-    background: #40739e;
-}
-</style>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h1 class="mb-0 h4">Create New Student</h1>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        <label for="student_id" class="form-label">Student ID</label>
+                        {{ form.student_id(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="first_name" class="form-label">First Name</label>
+                        {{ form.first_name(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="last_name" class="form-label">Last Name</label>
+                        {{ form.last_name(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        {{ form.email(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="national_id" class="form-label">National ID</label>
+                        {{ form.national_id(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="date_of_birth" class="form-label">Date of Birth</label>
+                        {{ form.date_of_birth(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        {{ form.password(class="form-control") }}
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <a href="{{ url_for('admin.show_students') }}" class="btn btn-secondary me-2">Cancel</a>
+                        {{ form.submit(class="btn btn-success") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

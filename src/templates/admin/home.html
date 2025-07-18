@@ -1,16 +1,53 @@
 {% extends "base.html" %}
 {% block title %}Admin Home{% endblock %}
 {% block content %}
-<h1>Admin Home</h1>
-<p><a href="{{ url_for('admin.show_students') }}" class="btn">Manage Students</a></p>
-<p><a href="{{ url_for('admin.show_courses') }}" class="btn">Manage Courses</a></p>
-<p><a href="{{ url_for('admin.show_teachers') }}" class="btn">Manage Teachers</a></p>
-<p><a href="{{ url_for('admin.show_enrollments') }}" class="btn">Manage Enrollments</a></p>
-<p><a href="{{ url_for('admin.semesters') }}" class="btn">Manage Semesters</a></p>
-<p>Enrollment is currently: <strong>{{ 'OPEN' if setting.enrollment_open else 'CLOSED' }}</strong></p>
-<form method="post" action="{{ url_for('admin.toggle_enrollment') }}">
-    <button type="submit">
-        {% if setting.enrollment_open %}Close Enrollment{% else %}Open Enrollment{% endif %}
-    </button>
-</form>
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0"><i class="bi bi-person-badge"></i> Admin Dashboard</h2>
+            </div>
+            <div class="card-body">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6 col-lg-4">
+                        <a href="{{ url_for('admin.show_students') }}" class="btn btn-outline-primary w-100 py-3">
+                            <i class="bi bi-people"></i> Manage Students
+                        </a>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <a href="{{ url_for('admin.show_courses') }}" class="btn btn-outline-success w-100 py-3">
+                            <i class="bi bi-journal-bookmark"></i> Manage Courses
+                        </a>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <a href="{{ url_for('admin.show_teachers') }}" class="btn btn-outline-warning w-100 py-3">
+                            <i class="bi bi-person-video2"></i> Manage Teachers
+                        </a>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <a href="{{ url_for('admin.show_enrollments') }}" class="btn btn-outline-info w-100 py-3">
+                            <i class="bi bi-card-checklist"></i> Manage Enrollments
+                        </a>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <a href="{{ url_for('admin.semesters') }}" class="btn btn-outline-secondary w-100 py-3">
+                            <i class="bi bi-calendar-week"></i> Manage Semesters
+                        </a>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <span class="fw-bold">Enrollment is currently:</span>
+                    <span class="badge {% if setting.enrollment_open %}bg-success{% else %}bg-danger{% endif %} ms-2">
+                        {{ 'OPEN' if setting.enrollment_open else 'CLOSED' }}
+                    </span>
+                </div>
+                <form method="post" action="{{ url_for('admin.toggle_enrollment') }}">
+                    <button type="submit" class="btn {% if setting.enrollment_open %}btn-danger{% else %}btn-success{% endif %}">
+                        {% if setting.enrollment_open %}<i class="bi bi-lock"></i> Close Enrollment{% else %}<i class="bi bi-unlock"></i> Open Enrollment{% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

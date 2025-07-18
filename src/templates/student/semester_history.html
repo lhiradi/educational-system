@@ -4,18 +4,33 @@
 
 {% block content %}
 <div class="container">
-  <h1>Semester History</h1>
+  <h1 class="text-primary fw-bold mb-4">Semester History</h1>
   
   {% if semesters %}
-  <div class="list-group">
-    {% for semester in semesters %}
-      <a href="{{ url_for('student.semester_details', semester_id=semester.id) }}" class="list-group-item list-group-item-action">
-        {{ semester.year }} - {{ semester.term }}
-      </a>
-    {% endfor %}
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-info text-white">
+      <h5 class="mb-0">Your Semesters</h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="list-group list-group-flush">
+        {% for semester in semesters %}
+          <a href="{{ url_for('student.semester_details', semester_id=semester.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            <span>
+              <i class="bi bi-calendar-week me-2"></i>
+              {{ semester.year }} - {{ semester.term }}
+            </span>
+            <span class="badge bg-primary rounded-pill">
+              {{ semester.start_date.strftime('%Y-%m-%d') }} &ndash; {{ semester.end_date.strftime('%Y-%m-%d') }}
+            </span>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
   </div>
   {% else %}
-  <p>You have no semester history.</p>
+  <div class="alert alert-warning text-center">
+    <i class="bi bi-info-circle"></i> You have no semester history.
+  </div>
   {% endif %}
 </div>
 {% endblock %}

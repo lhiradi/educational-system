@@ -4,38 +4,49 @@
 {% block title %}My Courses{% endblock %}
 
 {% block content %}
-<h1>My Courses</h1>
+<h1 class="text-primary fw-bold mb-4">My Courses</h1>
 
 {% if courses %}
-<table border="1" cellpadding="5" cellspacing="0">
-    <thead>
-        <tr>
-            <th>Course ID</th>
-            <th>Course Name</th>
-            <th>Units</th>
-            <th>Days</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <th>Capacity</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for course in courses %}
-        <tr>
-            <td>{{ course.course_id }}</td>
-            <td>{{ course.course_name }}</td>
-            <td>{{ course.course_unit }}</td>
-            <td>{{ course.days }}</td>
-            <td>{{ course.start_time.strftime('%H:%M') if course.start_time else '' }}</td>
-            <td>{{ course.end_time.strftime('%H:%M') if course.end_time else '' }}</td>
-            <td>{{ course.capacity }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-warning text-dark">
+        <h5 class="mb-0">Course List</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Course ID</th>
+                        <th>Course Name</th>
+                        <th>Units</th>
+                        <th>Days</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Capacity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for course in courses %}
+                    <tr>
+                        <td>{{ course.course_id }}</td>
+                        <td>{{ course.course_name }}</td>
+                        <td>{{ course.course_unit }}</td>
+                        <td>{{ course.days }}</td>
+                        <td>{{ course.start_time.strftime('%H:%M') if course.start_time else '' }}</td>
+                        <td>{{ course.end_time.strftime('%H:%M') if course.end_time else '' }}</td>
+                        <td>{{ course.capacity }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer bg-light">
+        {{ render_pagination(courses, 'teacher.show_courses') }}
+    </div>
+</div>
 {% else %}
-<p>No courses found.</p>
+<div class="alert alert-info">No courses found.</div>
 {% endif %}
 
-{{ render_pagination(courses, 'teacher.show_courses') }}
 {% endblock %}
