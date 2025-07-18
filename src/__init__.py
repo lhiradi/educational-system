@@ -21,10 +21,12 @@ from src.models.setting import Setting
 
 load_dotenv()
 
-def create_app():
+def create_app(config=None):
     app = Flask(__name__)
     app.config.from_object(Config)
-
+    if config:
+        app.config.update(config)
+        
     db.init_app(app)
     mail.init_app(app)
     login_manager.init_app(app)

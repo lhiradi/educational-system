@@ -10,6 +10,7 @@ from src.models.semester import Semester
 from src.forms.student_form import StudentForm, StudentProfileForm
 from src.forms.course_form import CourseForm
 from src.forms.semester_form import SemesterForm
+from src.models.student_semester import StudentSemester
 from src.forms.teacher_form import TeacherForm, TeacherProfileForm
 from src.forms.enrollment_form import EnrollmentForm
 from src.models.students_courses import StudentsCourses
@@ -364,6 +365,18 @@ def add_enrollment():
                 grade=form.grade.data
             )
             db.session.add(enrollment)
+            
+            student_semester = StudentSemester.query.filter_by(
+                            student_id=form.student_id.data,
+                            semester_id=form.semester_id.data
+                            ).first()
+            if not student_semester:
+                student_semester = StudentSemester(
+                student_id=form.student_id.data,
+                semester_id=form.semester_id.data
+                )
+            db.session.add(student_semester)
+
             db.session.commit()
             logger.info(f"Enrollment created by admin for student {enrollment.student_id} in course {enrollment.course_id}.")
             flash("Enrollment created successfully", "success")
