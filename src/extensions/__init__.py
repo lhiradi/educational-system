@@ -1,7 +1,5 @@
 from flask import flash, redirect, url_for, abort
 from flask_login import LoginManager, current_user
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
 from functools import wraps
@@ -9,10 +7,6 @@ from functools import wraps
 
 db = SQLAlchemy()
 mail = Mail()
-
-limiter = Limiter(get_remote_address,
-                  default_limits=["50 per hour"]
-                  )
 
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"

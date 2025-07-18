@@ -7,17 +7,16 @@ def test_login_logout(client, init_database):
     WHEN they log in and then log out
     THEN they should be redirected correctly and the session should be cleared
     """
-    # Test login with correct credentials
     rv = login(client, 'admin123', 'password')
     assert rv.status_code == 200
     assert b'Welcome, Admin!' in rv.data
 
-    # Test logout
+
     rv = logout(client)
     assert rv.status_code == 200
     assert b'Login' in rv.data
 
-    # Test login with incorrect credentials
+
     rv = login(client, 'admin123', 'wrongpassword')
     assert rv.status_code == 200
     assert b'Invalid credentials' in rv.data
@@ -46,19 +45,19 @@ def test_unauthorized_access(client, init_database):
     WHEN they try to access a protected page
     THEN they should be redirected to the login page
     """
-    # Try to access admin dashboard
+    
     rv = client.get(url_for('admin.home'), follow_redirects=True)
     assert rv.status_code == 200
     assert b'Please log in to access this page.' in rv.data
     assert b'Login' in rv.data
 
-    # Try to access teacher dashboard
+    
     rv = client.get(url_for('teacher.teacher_home'), follow_redirects=True)
     assert rv.status_code == 200
     assert b'Please log in to access this page.' in rv.data
     assert b'Login' in rv.data
 
-    # Try to access student dashboard
+    
     rv = client.get(url_for('student.home'), follow_redirects=True)
     assert rv.status_code == 200
     assert b'Please log in to access this page.' in rv.data
@@ -70,13 +69,13 @@ def test_role_based_access(client, init_database):
     WHEN they try to access a page for a different role
     THEN they should be shown an unauthorized message
     """
-    # Student tries to access admin page
+    
     login(client, 'student1', 'password')
     rv = client.get(url_for('admin.home'), follow_redirects=True)
     assert rv.status_code == 403 
     logout(client)
 
-    # Teacher tries to access admin page
+   
     login(client, 'teacher12', 'password')
     rv = client.get(url_for('admin.home'), follow_redirects=True)
     assert rv.status_code == 403 
