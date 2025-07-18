@@ -42,6 +42,7 @@ The application is designed with three distinct user roles, each with a specific
 * **Email Notifications:** Flask-Mail
 * **Frontend Templating:** Jinja2
 * **Styling & Scripting:** HTML, CSS, JavaScript
+* **Testing:** Pytest
 * **Environment Configuration:** python-dotenv
 
 ---
@@ -117,6 +118,15 @@ Follow these instructions to set up and run the project on your local machine.
 
 ---
 
+## 🧪 Testing
+The project includes a comprehensive test suite using `pytest`. The tests are configured to use an in-memory SQLite database, ensuring that running them will not affect your development database.
+
+To run the tests, execute the following command from the project's root directory:
+```bash
+pytest
+```
+
+---
 
 ## 📁 Project Structure
 
@@ -126,7 +136,6 @@ The project follows a modular structure for scalability and maintainability.
 educational-system/
 ├── app.py                # Main application entry point
 ├── requirements.txt      # List of Python dependencies
-├── .env                  # Environment variables (created by user)
 ├── src/                  # Main source code directory
 │   ├── __init__.py         # Application factory and setup
 │   ├── configs/            # Configuration files
@@ -137,6 +146,14 @@ educational-system/
 │   ├── static/             # Static assets (CSS, JS)
 │   ├── templates/          # Jinja2 HTML templates
 │   └── utils/              # Utility functions (email, logging)
+├── tests/                # Pytest test files
+│   ├── __init__.py
+│   ├── conftest.py         # Pytest configuration and fixtures
+│   ├── admin_routes.py
+│   ├── auth_routes.py
+│   ├── models.py
+│   ├── student_routes.py
+│   └── teacher_routes.py
 └── LICENSE               # Project license file
 ```
 
