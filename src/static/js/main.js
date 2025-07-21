@@ -1,3 +1,4 @@
+
 function tableSearch(inputId, tableId) {
     const input = document.getElementById(inputId);
     const filter = input.value.toLowerCase();
@@ -20,21 +21,24 @@ function tableSearch(inputId, tableId) {
 document.addEventListener('DOMContentLoaded', () => {
     const flashContainer = document.getElementById('flash-messages');
     if (flashContainer) {
-       
         const flashes = flashContainer.querySelectorAll('.flash');
         flashes.forEach(flash => {
-            const closeBtn = document.createElement('span');
-            closeBtn.className = 'flash-close';
-            closeBtn.innerHTML = '&times;';
-            closeBtn.style.cursor = 'pointer';
-            closeBtn.style.marginLeft = '10px';
-            closeBtn.style.fontWeight = 'bold';
-            closeBtn.addEventListener('click', () => {
-                flash.style.display = 'none';
-            });
-            flash.appendChild(closeBtn);
-
-         
+            
+            if (!flash.querySelector('.flash-close')) {
+                const closeBtn = document.createElement('span');
+                closeBtn.className = 'flash-close';
+                closeBtn.innerHTML = '&times;';
+                closeBtn.style.cursor = 'pointer';
+                closeBtn.style.marginLeft = '10px';
+                closeBtn.style.fontWeight = 'bold';
+                closeBtn.addEventListener('click', () => {
+                    flash.style.opacity = '0';
+                    setTimeout(() => {
+                        flash.style.display = 'none';
+                    }, 500);
+                });
+                flash.appendChild(closeBtn);
+            }
             setTimeout(() => {
                 flash.style.transition = 'opacity 0.5s ease-out';
                 flash.style.opacity = '0';
