@@ -1,166 +1,134 @@
 # Educational System
 
-A comprehensive, multi-user educational management system built with Python and Flask. This application provides a robust platform for administrators, teachers, and students to manage courses, enrollments, and user data in an academic setting.
+This is a comprehensive web-based educational management system built with Flask. It provides a platform for managing students, teachers, courses, and enrollments, with distinct roles and functionalities for administrators, teachers, and students.
 
 ---
 
-## ✨ Features
+## Features
 
-The application is designed with three distinct user roles, each with a specific set of permissions and functionalities.
+### Admin
+- **Dashboard**: Central hub for all administrative tasks.
+- **User Management**: Create, edit, and delete student and teacher accounts.
+- **Course Management**: Create, edit, and delete courses, including details like course name, units, capacity, and schedule.
+- **Enrollment Management**: Manually enroll or remove students from courses.
+- **Semester Management**: Create, edit, and delete academic semesters.
+- **Content Management**: Create, edit, and delete informational posts for all users.
+- **System Settings**: Toggle enrollment status (open/closed) for the entire system.
 
-### 👤 Admin
-* **User Management:** Full CRUD (Create, Read, Update, Delete) capabilities for both student and teacher accounts.
-* **Course & Semester Management:** Full CRUD for courses and academic semesters.
-* **Enrollment Oversight:** Manually enroll or unenroll students from courses and view/edit all enrollment records.
-* **System Control:** Open or close the global enrollment period for all students with a single click.
+### Teacher
+- **Dashboard**: Access to teacher-specific functionalities.
+- **Course Management**: View assigned courses and their details.
+- **Student Management**: View enrolled students for each course, assign grades, and remove students from courses.
 
-### 👩‍🏫 Teacher
-* **Dashboard:** A personalized view of all assigned courses.
-* **Student Rosters:** Access lists of students enrolled in each course.
-* **Grade Management:** Easily assign, view, and update grades for individual students.
-* **Course Administration:** Remove students from an assigned course.
+### Student
+- **Dashboard**: Personalized dashboard with links to key student features.
+- **Course Enrollment**: View available courses for the current semester and self-enroll.
+- **Course Management**: View enrolled courses, assigned teachers, and grades.
+- **Enrollment Finalization**: Finalize course selection for the semester.
+- **Semester History**: View academic history, including past semesters and course details.
 
-### 🧑‍🎓 Student
-* **Course Enrollment:** Browse and enroll in available courses. The system automatically prevents time conflicts and manages course capacity.
-* **Personal Dashboard:** View enrolled courses, assigned teachers, schedules, and current grades for the active semester.
-* **Academic Rules:** The system enforces a valid number of units for enrollment (between 14 and 24).
-* **Enrollment Finalization:** Lock in course selections for the academic term.
-* **Academic History:** View records of courses and grades from previous semesters.
-
-### 🔐 Authentication
-* **Secure Role-Based Login:** Standard login using a User ID and password.
-* **OTP Login:** A convenient and secure password-less login option using a One-Time Password (OTP) sent to the user's registered email.
-
----
-
-## 🛠️ Tech Stack
-
-* **Backend:** Python, Flask
-* **Database ORM:** Flask-SQLAlchemy
-* **Forms & Validation:** Flask-WTF
-* **Authentication:** Flask-Login
-* **Email Notifications:** Flask-Mail
-* **Frontend Templating:** Jinja2
-* **Styling & Scripting:** HTML, CSS, JavaScript
-* **Testing:** Pytest
-* **Environment Configuration:** python-dotenv
+### General
+- **Authentication**: Secure user login with password or One-Time Password (OTP) via email.
+- **Role-Based Access Control**: Differentiated access levels and permissions for admins, teachers, and students.
 
 ---
 
-## 🚀 Getting Started
+## Project Structure
 
-Follow these instructions to set up and run the project on your local machine.
+The project is organized into the following directories and files:
 
-### Prerequisites
+-   **`src/`**: Main source code directory.
+    -   **`__init__.py`**: Initializes the Flask application and its extensions.
+    -   **`configs/`**: Contains configuration files for the application.
+    -   **`extensions/`**: Houses Flask extensions and custom decorators.
+    -   **`forms/`**: Defines WTForms for handling user input and validation.
+    -   **`models/`**: Contains SQLAlchemy database models.
+    -   **`routes/`**: Manages application routes and views using Flask Blueprints.
+    -   **`static/`**: Stores static assets like CSS and JavaScript files.
+    -   **`templates/`**: Holds Jinja2 HTML templates for rendering views.
+    -   **`utils/`**: Includes utility functions for tasks like email and logging.
 
-* Python 3.10+
-* A virtual environment tool like `venv` (recommended).
+---
 
-### Installation & Setup
+## Technologies Used
 
-1.  **Clone the repository:**
+-   **Backend**: Python, Flask
+-   **Database**: Flask-SQLAlchemy (for any SQLAlchemy-compatible database)
+-   **Authentication**: Flask-Login
+--   **Forms**: Flask-WTF
+-   **Frontend**: HTML, CSS (Bootstrap), JavaScript
+-   **Environment Variables**: python-dotenv
+-   **Email**: Flask-Mail
+
+---
+
+## Installation and Setup
+
+1.  **Clone the repository**:
     ```bash
-    git clone [https://github.com/lhiradi/educational-system.git](https://github.com/lhiradi/educational-system.git)
+    git clone [https://your-repository-url.com/](https://your-repository-url.com/)
     cd educational-system
     ```
 
-2.  **Create and activate a virtual environment:**
+2.  **Create and activate a virtual environment**:
     ```bash
-    # For Windows
     python -m venv venv
-    .\venv\Scripts\activate
-
-    # For macOS/Linux
-    python3 -m venv venv
-    source venv/bin/activate
+    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
     ```
 
-3.  **Install the required packages:**
+3.  **Install the required dependencies**:
     ```bash
     pip install -r requirements.txt
     ```
 
-4.  **Configure Environment Variables:**
-    Create a file named `.env` in the project's root directory. Copy and paste the following content into it, replacing the placeholder values with your actual configuration.
+4.  **Set up the environment variables**:
+    -   Create a `.env` file in the root directory.
+    -   Add the following environment variables to the `.env` file, replacing the placeholder values with your actual configuration:
+        ```env
+        SECRET_KEY='your_strong_secret_key'
+        SQLALCHEMY_DATABASE_URI='your_database_uri'  # e.g., 'sqlite:///project.db'
+        SQLALCHEMY_TRACK_MODIFICATIONS=False
 
-    ```env
-    # Flask App Secret Key (change this to a random string)
-    SECRET_KEY='a_very_secret_and_secure_key'
+        # Email Configuration
+        MAIL_SERVER='smtp.your-email-provider.com'
+        MAIL_PORT=587
+        MAIL_USE_TLS=True
+        MAIL_USERNAME='your_email@example.com'
+        MAIL_PASSWORD='your_email_password'
+        MAIL_DEFAULT_SENDER='Your Name <your_email@example.com>'
 
-    # Database Configuration (example uses SQLite)
-    SQLALCHEMY_DATABASE_URI='sqlite:///site.db'
-    SQLALCHEMY_TRACK_MODIFICATIONS=False
-
-    # Default Admin User (created automatically on first run)
-    ADMIN_ID='admin1'
-    ADMIN_PASSWORD='securepassword123'
-    ADMIN_EMAIL='admin@example.com'
-    ADMIN_FIRST_NAME='Admin'
-    ADMIN_LAST_NAME='User'
-    ADMIN_NATIONAL_ID='1234567890'
-    ADMIN_DOB='2000-01-01'
-
-    # Email Server for OTP (example for Gmail)
-    MAIL_SERVER='smtp.gmail.com'
-    MAIL_PORT=587
-    MAIL_USE_TLS=True
-    MAIL_USERNAME='your-email@gmail.com'
-    MAIL_PASSWORD='your-gmail-app-password'
-    MAIL_DEFAULT_SENDER='"Educational System" <your-email@gmail.com>'
-    ```
-    > **Note:** For Gmail, you will need to generate an **App Password** from your Google Account security settings to use for `MAIL_PASSWORD`.
-
-5.  **Run the application:**
-    ```bash
-    python app.py
-    ```
-    The application will start on `http://127.0.0.1:5000`. The database file (`site.db`) and the default admin user will be created automatically the first time you run the app.
+        # Admin User Configuration
+        ADMIN_ID='admin_user_id'
+        ADMIN_EMAIL='admin@example.com'
+        ADMIN_FIRST_NAME='Admin'
+        ADMIN_LAST_NAME='User'
+        ADMIN_NATIONAL_ID='1234567890'
+        ADMIN_DOB='YYYY-MM-DD'
+        ADMIN_PASSWORD='your_admin_password'
+        ```
 
 ---
 
-## 🧪 Testing
-The project includes a comprehensive test suite using `pytest`. The tests are configured to use an in-memory SQLite database, ensuring that running them will not affect your development database.
+## Running the Application
 
-To run the tests, execute the following command from the project's root directory:
+To start the Flask development server, run the following command in the root directory:
+
 ```bash
-pytest
+flask run
 ```
+
+The application will be accessible at `http://127.0.0.1:5000`.
 
 ---
 
-## 📁 Project Structure
+## Usage
 
-The project follows a modular structure for scalability and maintainability.
-
-```
-educational-system/
-├── app.py                # Main application entry point
-├── requirements.txt      # List of Python dependencies
-├── src/                  # Main source code directory
-│   ├── __init__.py         # Application factory and setup
-│   ├── configs/            # Configuration files
-│   ├── extensions/         # Flask extension initializations
-│   ├── forms/              # WTForms classes
-│   ├── models/             # SQLAlchemy database models
-│   ├── routes/             # Flask Blueprints for app sections
-│   ├── static/             # Static assets (CSS, JS)
-│   ├── templates/          # Jinja2 HTML templates
-│   └── utils/              # Utility functions (email, logging)
-├── tests/                # Pytest test files
-│   ├── __init__.py
-│   ├── conftest.py         # Pytest configuration and fixtures
-│   ├── admin_routes.py
-│   ├── auth_routes.py
-│   ├── models.py
-│   ├── student_routes.py
-│   └── teacher_routes.py
-└── LICENSE               # Project license file
-```
+-   **Admin**: Log in with the admin credentials defined in your `.env` file to access the admin dashboard and manage the system.
+-   **Teacher/Student**:
+    -   An admin must first create teacher and student accounts.
+    -   Once created, teachers and students can log in with their assigned credentials.
+    -   Users can also opt to receive a One-Time Password (OTP) via email to log in.
 
 ---
 
-## 📜 License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
-
-&copy; 2025 hiradi
+This `README.md` file provides a comprehensive overview of the Educational System project, including its features, structure, setup instructions, and usage guidelines.
