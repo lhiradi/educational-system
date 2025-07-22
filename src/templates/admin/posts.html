@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% from "macros/_pagination.html" import render_pagination %}
+
+{% block title %}All Posts{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <a href="{{ url_for('admin.home') }}" class="btn btn-outline-primary me-2">
+            <i class="bi bi-house-door"></i> Admin Home
+        </a>
+        <a href="{{ url_for('admin.create_post') }}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Create New Post
+        </a>
+    </div>
+    <h1 class="text-primary fw-bold mb-0">All Posts</h1>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Post List</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Title</th>
+                        <th>Content</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in posts %}
+                    <tr>
+                        <td>{{ post.title }}</td>
+                        <td>{{ post.content|truncate(100) }}</td>
+                        <td class="text-center">
+                            <a href="{{ url_for('admin.edit_post', post_id=post.id) }}" class="btn btn-sm btn-warning me-1">
+                                <i class="bi bi-pencil-square"></i> Edit
+                            </a>
+                            <a href="{{ url_for('admin.delete_post', post_id=post.id) }}" class="btn btn-sm btn-danger"
+                               onclick="return confirm('Are you sure you want to delete this post?');">
+                                <i class="bi bi-trash"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% if posts.has_prev or posts.has_next %}
+    <div class="card-footer bg-light">
+        {{ render_pagination(posts, 'admin.show_posts') }}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

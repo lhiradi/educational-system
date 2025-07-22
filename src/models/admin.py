@@ -1,12 +1,14 @@
 from src.extensions import db
 from src.models.base_model import BaseModel
+from src.models.post import Post
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 class Admin(BaseModel, UserMixin):
     __tablename__ = "admins"
-    
     admin_id = db.Column(db.String(13), nullable=False)
+    
+    posts = db.relationship("Post", back_populates="admin", cascade="all, delete-orphan")
     
     @property
     def user_type(self):

@@ -4,6 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from flask_login import login_required, current_user
 from src.extensions import teacher_required, db
 from src.utils.logger import Logger
+from src.utils import get_current_semester
 from src.models.student import Student
 from src.models.course import Course
 from src.models.teacher import Teacher
@@ -48,18 +49,18 @@ def show_students():
         flash("A database error occurred while fetching your students.", "danger")
         return render_template("teacher/students.html", student_courses=[], courses=[])
 
-@teacher_bp.route("/student/<int:student_id>/<int:course_id>/delete", methods=["POST", "GET"])
+@teacher_bp.route("/student/<int:student_id>/<int:course_id>/<int:semester_id>/delete", methods=["POST", "GET"])
 @login_required
 @teacher_required
-def delete_student(student_id, course_id):
+def delete_student(student_id, course_id, semester_id):
     student = Student.query.get_or_404(student_id)
-    enrollment = StudentsCourses.query.filter_by(student_id=student_id, course_id=course_id).first_or_404()
+    enrollment = StudentsCourses.query.filter_by(student_id=student_id, course_id=course_id, semester_id=semester_id).first_or_404()
 
     if request.method == "POST":
         try:
             db.session.delete(enrollment)
             db.session.commit()
-            logger.info(f"Teacher {current_user.teacher_id} deleted student {student_id} from course {course_id}.")
+            logger.info(f"Teacher {current_user.teacher_id} deleted student {student_id} from course {course_id} in semester {semester_id}.")
             flash(f"{student.first_name} {student.last_name} was successfully removed from the course.", "success")
             return redirect(url_for("teacher.show_students"))
         except SQLAlchemyError as e:
@@ -70,11 +71,12 @@ def delete_student(student_id, course_id):
 
     return render_template("teacher/delete_student.html", student=student)
 
-@teacher_bp.route("/student/<int:student_id>/<int:course_id>/edit/score", methods=["POST", "GET"])
+
+@teacher_bp.route("/student/<int:student_id>/<int:course_id>/<int:semester_id>/edit/score", methods=["POST", "GET"])
 @login_required
 @teacher_required
-def edit_score(student_id, course_id):
-    enrollment = StudentsCourses.query.filter_by(student_id=student_id, course_id=course_id).first_or_404()
+def edit_score(student_id, course_id, semester_id):
+    enrollment = StudentsCourses.query.filter_by(student_id=student_id, course_id=course_id, semester_id=semester_id).first_or_404()
     if request.method == "POST":
         try:
             enrollment.grade = request.form["grade"]

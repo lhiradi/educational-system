@@ -1,20 +1,37 @@
 {% extends "base.html" %}
-{% block title %}Home{% endblock %}
+{% from "macros/_pagination.html" import render_pagination %}
+
+{% block title %}
+    Blog Home
+{% endblock %}
 
 {% block content %}
-<div class="container">
-  <div class="row justify-content-center">
-    <div class="col-lg-6">
-      <div class="card shadow-sm mt-5">
-        <div class="card-header bg-primary text-white">
-          <h2 class="mb-0"><i class="bi bi-house-door"></i> Welcome</h2>
-        </div>
-        <div class="card-body text-center">
-          <h3 class="fw-bold mb-3">Hello, {{ user.first_name }}!</h3>
-          <p class="mb-4">Welcome to the Educational System Portal.</p>
-        </div>
-      </div>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4 text-primary fw-bold">Welcome to your home page.</h1>
+
+        {% if posts.items %}
+            {% for post in posts.items %}
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <h2 class="card-title h4">{{ post.title }}</h2>
+                        <p class="card-text">{{ post.content|truncate(200) }}</p>
+                        <a href="{{ url_for('main.show_post', post_id=post.id) }}" class="btn btn-primary">
+                            Read More <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-info text-center" role="alert">
+                <h4 class="alert-heading">No Posts Yet!</h4>
+                <p>There are currently no posts to display. Please check back later!</p>
+            </div>
+        {% endif %}
+
+        {% if posts.has_prev or posts.has_next %}
+            <div class="d-flex justify-content-center mt-4">
+                {{ render_pagination(posts, 'main.index') }}
+            </div>
+        {% endif %}
     </div>
-  </div>
-</div>
 {% endblock %}

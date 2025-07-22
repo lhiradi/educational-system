@@ -1,18 +1,20 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for 
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from flask_login import login_required
+from flask_login import login_required, current_user
 from src.extensions import admin_required
 from src.models.student import Student
 from src.models.course import Course
 from src.models.teacher import Teacher
 from src.models.semester import Semester
+from src.models.post import Post
 from src.forms.student_form import StudentForm, StudentProfileForm
 from src.forms.course_form import CourseForm
 from src.forms.semester_form import SemesterForm
 from src.models.student_semester import StudentSemester
 from src.forms.teacher_form import TeacherForm, TeacherProfileForm
 from src.forms.enrollment_form import EnrollmentForm
+from src.forms.post_form import PostForm
 from src.models.students_courses import StudentsCourses
 from src.extensions import db
 from src.models.setting import Setting
@@ -391,11 +393,11 @@ def add_enrollment():
             flash("A database error occurred. Please try again.", "danger")
     return render_template("admin/create_enrollment.html", form=form)
 
-@admin_bp.route("/enrollment/<int:student_id>/<int:course_id>/edit", methods=["POST", "GET"])
+@admin_bp.route("/enrollment/<int:student_id>/<int:course_id>/<int:semester_id>/edit", methods=["POST", "GET"])
 @login_required
 @admin_required
-def edit_enrollment(student_id, course_id):
-    enrollment = StudentsCourses.query.filter_by(student_id=student_id, course_id=course_id).first_or_404()
+def edit_enrollment(student_id, course_id, semester_id):
+    enrollment = StudentsCourses.query.filter_by(student_id=student_id, course_id=course_id, semester_id=semester_id).first_or_404()
     form = EnrollmentForm(obj=enrollment)
     form.student_id.choices = [(s.id, f"{s.first_name} {s.last_name}") for s in Student.query.all()]
     form.course_id.choices = [(c.id, f"{c.course_name} ({c.course_id})") for c in Course.query.all()]
@@ -418,11 +420,11 @@ def edit_enrollment(student_id, course_id):
     
     return render_template("admin/edit_enrollment.html", enrollment=enrollment, form=form)
 
-@admin_bp.route("/enrollment/<int:student_id>/<int:course_id>/delete", methods=["POST", "GET"])
+@admin_bp.route("/enrollment/<int:student_id>/<int:course_id>/<int:semester_id>/delete", methods=["POST", "GET"])
 @login_required
 @admin_required
-def delete_enrollment(student_id, course_id):
-    enrollment = StudentsCourses.query.filter_by(student_id=student_id, course_id=course_id).first_or_404()
+def delete_enrollment(student_id, course_id, semester_id):
+    enrollment = StudentsCourses.query.filter_by(student_id=student_id, course_id=course_id, semester_id=semester_id).first_or_404()
     if request.method == "POST":
         try:
             db.session.delete(enrollment)
@@ -533,3 +535,80 @@ def delete_semester(semester_id):
             flash("A database error occurred. The semester could not be deleted.", "danger")
             return redirect(url_for("admin.semesters"))
     return render_template("admin/delete_semester.html", semester=semester)
+
+
+@admin_bp.route("/posts")
+def show_posts():
+    try:
+        posts = Post.query.all()
+        logger.info("Admin retrieved all posts successfully.")
+        return render_template("admin/posts.html", posts=posts)
+    except SQLAlchemyError as e:
+        logger.error(f"Database error while fetching posts: {e}")
+        flash("A database error occurred while fetching the list of posts. Please try again later.", "danger")
+        return render_template("admin/semesters.html", semesters=[])
+
+@admin_bp.route("/posts/create", methods=["GET", "POST"])
+@login_required
+@admin_required
+def create_post():
+    form = PostForm()
+    if form.validate_on_submit():
+        try:
+           post = Post(
+               title=form.title.data,
+               content=form.content.data,
+               admin_id=current_user.id,
+           )
+           db.session.add(post)
+           db.session.commit()
+           flash("Post created successfully.", "success")
+           logger.info(f"Admin {current_user.id} created a post with id {post.id}")
+           return redirect(url_for("admin.show_posts"))
+       
+        except SQLAlchemyError as e:
+           db.session.rollback()
+           logger.error(f"Database error during post creation: {e}")
+           flash(f"Database error occured, Could not create post.", "danger")
+    return render_template("admin/create_post.html", form=form, title="Create Post")           
+    
+    
+@admin_bp.route("/posts/edit/<int:post_id>", methods=["GET", "POST"])
+@login_required
+@admin_required
+def edit_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    form = PostForm(obj=post)
+    if form.validate_on_submit():
+        try:
+            post.title = form.title.data
+            post.content = form.content.data
+            db.session.commit()
+            logger.info(f"Admin updated post {post_id}.")
+            flash("post updated successfully.", "success")
+            return redirect(url_for("admin.show_posts"))
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logger.error(f"Database error while updating post {post_id}: {e}")
+            flash("A database error occurred. Could not update the post.", "danger")
+    return render_template("admin/edit_post.html", form=form, post=post, title="Edit Post")
+
+
+@admin_bp.route("/posts/delete/<int:post_id>", methods=["GET", "POST"])
+@login_required
+@admin_required
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    if request.method == "POST":
+        try:
+            db.session.delete(post)
+            db.session.commit()
+            logger.info(f"Admin deleted post {post_id}.")
+            flash("Post has been deleted.", "success")
+            return redirect(url_for("admin.show_posts"))
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logger.error(f"Database error while deleting post {post_id}: {e}")
+            flash("A database error occurred. The post could not be deleted.", "danger")
+            return redirect(url_for("admin.show_posts"))
+    return render_template("admin/delete_post.html", post=post)
