@@ -50,12 +50,24 @@ The project is organized into the following directories and files:
 
 ---
 
+## UML Diagram
+
+![UML Diagram](docs/UML.png)
+
+---
+
+## ER Diagram
+
+![ER Diagram](docs/ER.png)
+
+---
+
 ## Technologies Used
 
 -   **Backend**: Python, Flask
 -   **Database**: Flask-SQLAlchemy (for any SQLAlchemy-compatible database)
 -   **Authentication**: Flask-Login
---   **Forms**: Flask-WTF
+-   **Forms**: Flask-WTF
 -   **Frontend**: HTML, CSS (Bootstrap), JavaScript
 -   **Environment Variables**: python-dotenv
 -   **Email**: Flask-Mail
@@ -66,7 +78,7 @@ The project is organized into the following directories and files:
 
 1.  **Clone the repository**:
     ```bash
-    git clone [https://your-repository-url.com/](https://your-repository-url.com/)
+    git clone [https://github.com/lhiradi/educational-system]
     cd educational-system
     ```
 
