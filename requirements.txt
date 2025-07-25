@@ -10,3 +10,4 @@ Flask-Mail
 itsdangerous
 pytest
 gunicorn
+dotenv
