@@ -10,18 +10,7 @@
     <h1 class="text-primary fw-bold mb-4">My Courses</h1>
   {% endif %}
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div id="flash-messages">
-        {% for category, message in messages %}
-          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-          </div>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
+  
 
   {% if courses_info %}
   <div class="card shadow-sm mb-4">
