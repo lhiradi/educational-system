@@ -4,7 +4,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = getenv("SQLALCHEMY_DATABASE_URI")
+    # SQLALCHEMY_DATABASE_URI = getenv("SQLALCHEMY_DATABASE_URI") (for sqlite DB)
+    # for MySql
+    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://<{getenv('DB_USER')}>:<{getenv('DB_PASSWORD')}>@<{getenv('DB_HOST')}>:<{getenv('DB_PORT')}>/<{getenv('DB_NAME')}>"
     SQLALCHEMY_TRACK_MODIFICATIONS = getenv("SQLALCHEMY_TRACK_MODIFICATIONS")
     
     MAIL_SERVER = getenv('MAIL_SERVER', 'smtp.gmail.com')
