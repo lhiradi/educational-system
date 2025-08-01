@@ -13,7 +13,7 @@ class Course(db.Model):
     capacity = db.Column(db.Integer, default=30)
     start_date = db.Column(db.Date)
     end_date = db.Column(db.Date)
-    days = db.Column(db.String, nullable=False)
+    days = db.Column(db.String(50), nullable=False)
     start_time = db.Column(db.Time, nullable=False)
     end_time = db.Column(db.Time, nullable=False)
     teacher_id = db.Column(db.Integer, db.ForeignKey("teachers.id"))

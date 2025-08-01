@@ -10,7 +10,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 class Teacher(BaseModel, UserMixin):
     __tablename__ = "teachers"
     
-    teacher_id = db.Column(db.String, nullable=False, unique=True)
+    teacher_id = db.Column(db.String(13), nullable=False, unique=True)
     
     courses = db.relationship('Course', back_populates='teacher', cascade="all, delete-orphan")
     
