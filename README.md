@@ -143,12 +143,10 @@ The project is organized into the following directories and files:
 ---
 
 ## UML Diagram
-![UML_Diagram](docs/UML.png)
-<img src="docs/UML.png" style="max-width: 900px; width: 100%;" alt="UML Diagram">
+<img src="docs/UML.png" style="width: 600px; height: 400px;" alt="UML Diagram">
 
 ## ER Diagram
-![ER_Diagram](docs/ER.png)
-<img src="docs/ER.png" style="max-width: 900px; width: 100%;" alt="ER Diagram">
+<img src="docs/ER.png" style="width: 600px; height: 400px;" alt="ER Diagram">
 
 ---
 ## Switching to MySQL (from SQLite)
