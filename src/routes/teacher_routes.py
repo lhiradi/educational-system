@@ -8,6 +8,7 @@ from src.utils import get_current_semester
 from src.models.student import Student
 from src.models.course import Course
 from src.models.teacher import Teacher
+from src.models.semester import Semester
 from src.models.students_courses import StudentsCourses
 
 teacher_bp = Blueprint("teacher", __name__, url_prefix="/teacher")
@@ -90,3 +91,60 @@ def edit_score(student_id, course_id, semester_id):
             flash("A database error occurred. The grade was not updated.", "danger")
 
     return render_template("teacher/edit_score.html", enrollment=enrollment)
+
+@teacher_bp.route("/history")
+@login_required
+@teacher_required
+def semester_history():
+
+    try:
+        teacher = Teacher.query.filter_by(national_id=current_user.national_id).first()
+        if not teacher:
+            logger.error(f"Teacher record not found for user {current_user.national_id}")
+            flash("Teacher record not found.", "danger")
+            return render_template("teacher/semester_history.html", semesters=[])
+
+        semesters = db.session.query(Semester)\
+                              .join(StudentsCourses, Semester.id == StudentsCourses.semester_id) \
+                              .join(Course, StudentsCourses.course_id == Course.id) \
+                              .filter(Course.teacher_id == teacher.id) \
+                              .distinct(Semester.id) \
+                              .order_by(Semester.start_date.desc()) \
+                              .all()
+
+        logger.info(f"Teacher {getattr(teacher, 'teacher_id', 'Unknown ID')} viewed their semester history.")
+        return render_template("teacher/semester_history.html", semesters=semesters)
+
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        logger.error(f"Database error while fetching semester history for teacher {getattr(current_user, 'teacher_id', 'Unknown')}: {e}")
+        flash("A database error occurred while fetching your semester history.", "danger")
+        return render_template("teacher/semester_history.html", semesters=[])
+
+
+@teacher_bp.route("/semester/<int:semester_id>")
+@login_required
+@teacher_required
+def semester_details(semester_id):
+    try:
+        teacher = Teacher.query.filter_by(national_id=current_user.national_id).first()
+        if not teacher:
+             logger.error(f"Teacher record not found for user {current_user.national_id}")
+             flash("Teacher record not found.", "danger")
+             return redirect(url_for('teacher.semester_history'))
+
+        semester = Semester.query.get_or_404(semester_id)
+        courses = db.session.query(Course)\
+                            .join(StudentsCourses, Course.id == StudentsCourses.course_id) \
+                            .filter(Course.teacher_id == teacher.id, StudentsCourses.semester_id == semester_id) \
+                            .distinct(Course.id) \
+                            .all()
+
+        logger.info(f"Teacher {getattr(teacher, 'teacher_id', 'Unknown ID')} viewed details for semester {semester_id}.")
+        return render_template("teacher/semester_details.html", courses=courses, semester=semester)
+
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        logger.error(f"Database error while fetching semester details for teacher {getattr(current_user, 'teacher_id', 'Unknown')}, semester {semester_id}: {e}")
+        flash("A database error occurred while fetching semester details.", "danger")
+        return redirect(url_for('teacher.semester_history'))
