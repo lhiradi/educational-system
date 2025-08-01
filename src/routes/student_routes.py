@@ -29,26 +29,36 @@ def home():
 def show_courses():
     try:
         current_semester = get_current_semester()
+        is_current_semester_finalized = False
+        
         if not current_semester:
             flash("There is no active semester at the moment", "danger")
-            return render_template("student/show_courses.html", courses_info=[], available_courses=[], current_semester=None)
+            return render_template("student/show_courses.html", courses_info=[], available_courses=[], 
+                                   current_semester=None, is_current_semester_finalized=is_current_semester_finalized)
+        
         course_links = StudentsCourses.query.filter_by(student_id=current_user.id, semester_id=current_semester.id).all()
         enrolled_courses = [link.course for link in course_links]
         grades = [link.grade for link in course_links]
         teachers = [f"{c.teacher.first_name} {c.teacher.last_name}" if c.teacher else "N/A" for c in enrolled_courses]
         courses_info = zip(enrolled_courses, grades, teachers)
         
-        
         all_courses = Course.query.all()
         enrolled_course_ids = {course.id for course in enrolled_courses}
         available_courses = [course for course in all_courses if course.id not in enrolled_course_ids]
 
+        current_semester_status = StudentSemester.query.filter_by(student_id=current_user.id, semester_id=current_semester.id).first()
+        if current_semester_status and current_semester_status.is_finalized:
+            is_current_semester_finalized = True 
+        
         logger.info(f"Student {current_user.student_id} viewed their courses.")
-        return render_template("student/show_courses.html", courses_info=courses_info, available_courses=available_courses, current_semester=current_semester)
+        return render_template("student/show_courses.html", courses_info=courses_info, 
+                               available_courses=available_courses, current_semester=current_semester, 
+                               is_current_semester_finalized=is_current_semester_finalized)
+        
     except SQLAlchemyError as e:
         logger.error(f"Database error while fetching courses for student {current_user.student_id}: {e}")
         flash("A database error occurred while fetching your courses.", "danger")
-        return render_template("student/show_courses.html", courses_info=[], available_courses=[], current_semester=None)
+        return render_template("student/show_courses.html", courses_info=[], available_courses=[], current_semester=None, is_current_semester_finalized=False)
 
 
 

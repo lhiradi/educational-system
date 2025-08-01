@@ -53,11 +53,14 @@
         </table>
       </div>
     </div>
+    {% if not is_current_semester_finalized %}
     <div class="card-footer bg-light">
       <form method="post" action="{{ url_for('student.finalize_enrollment') }}">
         <button type="submit" class="btn btn-success">Finalize Enrollment</button>
       </form>
     </div>
+    {% endif %}
+    
   </div>
   {% else %}
     <div class="alert alert-info">You are not enrolled in any courses for the current semester.</div>
