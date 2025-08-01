@@ -142,6 +142,15 @@ The project is organized into the following directories and files:
 
 ---
 
+## UML Diagram
+![UML_Diagram](docs/UML.png)
+<img src="docs/UML.png" style="max-width: 900px; width: 100%;" alt="UML Diagram">
+
+## ER Diagram
+![ER_Diagram](docs/ER.png)
+<img src="docs/ER.png" style="max-width: 900px; width: 100%;" alt="ER Diagram">
+
+---
 ## Switching to MySQL (from SQLite)
 
 By default, the application uses SQLite. To use MySQL:
