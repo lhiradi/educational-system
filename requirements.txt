@@ -11,3 +11,5 @@ itsdangerous
 pytest
 gunicorn
 dotenv
+pymysql
+cryptography
