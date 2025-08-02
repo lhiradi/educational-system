@@ -14,8 +14,9 @@
 </div>
 
 <div class="card shadow-sm mb-4">
-    <div class="card-header bg-primary text-white">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Semester List</h5>
+        <input type="text" id="searchInput" class="form-control w-25" placeholder="Search semesters...">
     </div>
     <div class="card-body p-0">
         {% if semesters %}
@@ -30,7 +31,7 @@
                         <th class="text-center">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="semestersTable">
                     {% for semester in semesters %}
                     <tr>
                         <td>{{ semester.year }}</td>
@@ -61,4 +62,17 @@
         {% endif %}
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('searchInput').addEventListener('keyup', function() {
+    let filter = this.value.toLowerCase();
+    let rows = document.querySelectorAll('#semestersTable tr');
+    rows.forEach(row => {
+        let text = row.textContent.toLowerCase();
+        row.style.display = text.includes(filter) ? '' : 'none';
+    });
+});
+</script>
 {% endblock %}

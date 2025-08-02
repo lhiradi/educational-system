@@ -16,8 +16,9 @@
 </div>
 
 <div class="card shadow-sm mb-4">
-    <div class="card-header bg-primary text-white">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Teacher List</h5>
+        <input type="text" id="searchInput" class="form-control w-25" placeholder="Search teachers...">
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -28,17 +29,19 @@
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>National ID</th>
+                        <th>Email</th>
                         <th>Date of Birth</th>
                         <th class="text-center">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="teachersTable">
                     {% for teacher in teachers.items %}
                     <tr>
                         <td>{{ teacher.teacher_id }}</td>
                         <td>{{ teacher.first_name }}</td>
                         <td>{{ teacher.last_name }}</td>
                         <td>{{ teacher.national_id }}</td>
+                        <td>{{ teacher.email }}</td>
                         <td>{{ teacher.date_of_birth.strftime('%Y-%m-%d') if teacher.date_of_birth else '' }}</td>
                         <td class="text-center">
                             <a href="{{ url_for('admin.edit_teacher', id=teacher.id) }}" class="btn btn-sm btn-warning me-1">
@@ -59,4 +62,17 @@
         {{ render_pagination(teachers, 'admin.show_teachers') }}
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('searchInput').addEventListener('keyup', function() {
+    let filter = this.value.toLowerCase();
+    let rows = document.querySelectorAll('#teachersTable tr');
+    rows.forEach(row => {
+        let text = row.textContent.toLowerCase();
+        row.style.display = text.includes(filter) ? '' : 'none';
+    });
+});
+</script>
 {% endblock %}

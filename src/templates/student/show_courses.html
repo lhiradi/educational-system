@@ -10,12 +10,13 @@
     <h1 class="text-primary fw-bold mb-4">My Courses</h1>
   {% endif %}
 
-  
+
 
   {% if courses_info %}
   <div class="card shadow-sm mb-4">
-    <div class="card-header bg-success text-white">
+    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
       <h5 class="mb-0">Enrolled Courses</h5>
+      <input type="text" id="searchInput" class="form-control w-25" placeholder="Search courses...">
     </div>
     <div class="card-body p-0">
       <div class="table-responsive">
@@ -34,7 +35,7 @@
               <th>End Time</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="coursesTable">
             {% for course, grade, teacher in courses_info %}
             <tr>
               <td>{{ course.course_id }}</td>
@@ -60,7 +61,7 @@
       </form>
     </div>
     {% endif %}
-    
+
   </div>
   {% else %}
     <div class="alert alert-info">You are not enrolled in any courses for the current semester.</div>
@@ -97,4 +98,17 @@
     </a>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('searchInput').addEventListener('keyup', function() {
+    let filter = this.value.toLowerCase();
+    let rows = document.querySelectorAll('#coursesTable tr');
+    rows.forEach(row => {
+        let text = row.textContent.toLowerCase();
+        row.style.display = text.includes(filter) ? '' : 'none';
+    });
+});
+</script>
 {% endblock %}

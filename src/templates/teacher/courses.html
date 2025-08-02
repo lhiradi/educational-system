@@ -8,8 +8,9 @@
 
 {% if courses %}
 <div class="card shadow-sm mb-4">
-    <div class="card-header bg-warning text-dark">
+    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Course List</h5>
+        <input type="text" id="searchInput" class="form-control w-25" placeholder="Search courses...">
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -22,11 +23,13 @@
                         <th>Days</th>
                         <th>Start Time</th>
                         <th>End Time</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
                         <th>Capacity</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {% for course in courses %}
+                <tbody id="coursesTable">
+                    {% for course in courses.items %}
                     <tr>
                         <td>{{ course.course_id }}</td>
                         <td>{{ course.course_name }}</td>
@@ -34,6 +37,8 @@
                         <td>{{ course.days }}</td>
                         <td>{{ course.start_time.strftime('%H:%M') if course.start_time else '' }}</td>
                         <td>{{ course.end_time.strftime('%H:%M') if course.end_time else '' }}</td>
+                        <td>{{ course.start_date }}</td>
+                        <td>{{ course.end_date }}</td>
                         <td>{{ course.capacity }}</td>
                     </tr>
                     {% endfor %}
@@ -49,4 +54,17 @@
 <div class="alert alert-info">No courses found.</div>
 {% endif %}
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('searchInput').addEventListener('keyup', function() {
+    let filter = this.value.toLowerCase();
+    let rows = document.querySelectorAll('#coursesTable tr');
+    rows.forEach(row => {
+        let text = row.textContent.toLowerCase();
+        row.style.display = text.includes(filter) ? '' : 'none';
+    });
+});
+</script>
 {% endblock %}

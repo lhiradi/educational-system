@@ -14,8 +14,9 @@
 </div>
 
 <div class="card shadow-sm mb-4">
-    <div class="card-header bg-primary text-white">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Enrollment List</h5>
+        <input type="text" id="searchInput" class="form-control w-25" placeholder="Search enrollments...">
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -29,7 +30,7 @@
                         <th class="text-center">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="enrollmentsTable">
                     {% for enrollment in enrollments.items %}
                     <tr>
                         <td>{{ enrollment.student.first_name }} {{ enrollment.student.last_name }}</td>
@@ -55,4 +56,17 @@
         {{ render_pagination(enrollments, 'admin.show_enrollments') }}
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('searchInput').addEventListener('keyup', function() {
+    let filter = this.value.toLowerCase();
+    let rows = document.querySelectorAll('#enrollmentsTable tr');
+    rows.forEach(row => {
+        let text = row.textContent.toLowerCase();
+        row.style.display = text.includes(filter) ? '' : 'none';
+    });
+});
+</script>
 {% endblock %}
