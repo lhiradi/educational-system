@@ -7,7 +7,7 @@ VALID_DAYS = ["SATURDAY", "SUNDAY", "MONDAY",
 class Course(db.Model):
     __tablename__ = "courses"
     id = db.Column(db.Integer, primary_key=True)
-    course_id = db.Column(db.String(8), nullable=False)
+    course_id = db.Column(db.String(8), nullable=False, unique=True)
     course_name = db.Column(db.String(50), nullable=False)
     course_unit = db.Column(db.Integer, nullable=False, default=2)
     capacity = db.Column(db.Integer, default=30)

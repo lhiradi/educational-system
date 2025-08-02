@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 class Admin(BaseModel, UserMixin):
     __tablename__ = "admins"
-    admin_id = db.Column(db.String(13), nullable=False)
+    admin_id = db.Column(db.String(13), nullable=False, unique=True)
     
     posts = db.relationship("Post", back_populates="admin", cascade="all, delete-orphan")
     
