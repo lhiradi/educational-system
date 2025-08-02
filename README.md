@@ -57,6 +57,7 @@ The project is organized into the following directories and files:
 - **`app.py`**: The main application entry point.
 - **`requirements.txt`**: Lists the Python dependencies required to run the application.
 - **`dockerfile`**: Provides instructions for building a Docker image for the application.
+- **`docker-compose.yml`**: Defines and runs multi-container Docker applications (app and MySQL db).
 - **`.env`**: (Not included in repo) File for storing environment variables (secret keys, database URI, email config).
 - **`README.md`**: This file, providing an overview and setup instructions.
 - **`LICENSE`**: The software license (MIT).
