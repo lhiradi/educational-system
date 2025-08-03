@@ -359,6 +359,10 @@ def add_enrollment():
     form.semester_id.choices = [(s.id, f"{s.year} ({s.term})") for s in Semester.query.all()]
     if form.validate_on_submit():
         try:
+            if StudentsCourses.query.filter_by(course_id=form.course_id.data).count() >= Course.query.get(form.course_id.data).capacity:
+                flash("Course is out of capacity", "danger")
+                return redirect(url_for("admin.add_enrollment"))
+            
             enrollment = StudentsCourses(
                 student_id=form.student_id.data,
                 course_id=form.course_id.data,
