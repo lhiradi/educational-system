@@ -129,6 +129,23 @@ def enroll_course():
 
     return redirect(url_for("student.show_courses"))
 
+@login_required
+@student_required
+@student_bp.route("/unenroll/<int:course_id>")
+def unenroll(course_id):
+    try:
+        current_semester = get_current_semester()
+        enrollment = StudentsCourses.query.filter_by(course_id=course_id, semester_id=current_semester.id, student_id=current_user.id).first()
+        db.session.delete(enrollment)
+        db.session.commit()
+        flash("Course unenrolled successfully", "success")
+        logger.info(f"Student {current_user.student_id} successfully unenrolled in course {course_id}")
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        flash("A database error occurred. Please try again.", "danger")
+        logger.error(f"Database error during unenrolling student {current_user.student_id}: {e}")
+    return redirect(url_for("student.show_courses"))
+   
 @student_bp.route("/finalize", methods=["POST"])
 @login_required
 @student_required
