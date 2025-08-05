@@ -10,4 +10,4 @@ class Semester(db.Model):
 
     student_links = db.relationship('StudentSemester', back_populates='semester', cascade="all, delete-orphan")
 
-    
+    course_links = db.relationship('StudentsCourses', back_populates='semester', cascade="all, delete-orphan")

@@ -8,7 +8,7 @@ from src.models.students_courses import StudentsCourses
 from src.models.student_semester import StudentSemester
 from src.models.semester import Semester
 from src.extensions import db, student_required
-from src.utils import days_overlap, get_total_enrolled_units, get_current_semester
+from src.utils import days_overlap, get_total_enrolled_units, get_current_semester, time_overlap
 from flask_login import login_required, current_user
 from datetime import date
 from src.models.setting import Setting
@@ -48,17 +48,23 @@ def show_courses():
 
         current_semester_status = StudentSemester.query.filter_by(student_id=current_user.id, semester_id=current_semester.id).first()
         if current_semester_status and current_semester_status.is_finalized:
-            is_current_semester_finalized = True 
+            is_current_semester_finalized = True
+            
+        setting = Setting.query.first()
+        is_enrollment_open = setting.enrollment_open if setting else False 
         
         logger.info(f"Student {current_user.student_id} viewed their courses.")
         return render_template("student/show_courses.html", courses_info=courses_info, 
                                available_courses=available_courses, current_semester=current_semester, 
-                               is_current_semester_finalized=is_current_semester_finalized)
+                               is_current_semester_finalized=is_current_semester_finalized,
+                               is_enrollment_open=is_enrollment_open)
         
     except SQLAlchemyError as e:
         logger.error(f"Database error while fetching courses for student {current_user.student_id}: {e}")
         flash("A database error occurred while fetching your courses.", "danger")
-        return render_template("student/show_courses.html", courses_info=[], available_courses=[], current_semester=None, is_current_semester_finalized=False)
+        return render_template("student/show_courses.html", courses_info=[], available_courses=[], current_semester=None,
+                               is_current_semester_finalized=False,
+                               is_enrollment_open=is_enrollment_open)
 
 
 
@@ -92,8 +98,7 @@ def enroll_course():
         enrolled_courses = [link.course for link in enrolled_courses_links]
         for enrolled_course in enrolled_courses:
             if days_overlap(enrolled_course.days, course_to_enroll.days) and \
-               (enrolled_course.start_time < course_to_enroll.end_time and
-                course_to_enroll.start_time < enrolled_course.end_time):
+               time_overlap(course_to_enroll, enrolled_course):
                 flash(f"Time conflict with course: {enrolled_course.course_name}", "error")
                 return redirect(url_for("student.show_courses"))
 

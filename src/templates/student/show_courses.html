@@ -3,120 +3,245 @@
 {% block title %}My Courses{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container mt-4">
+  <h1 class="text-primary fw-bold mb-4">My Courses</h1>
+
   {% if current_semester %}
-    <h1 class="text-primary fw-bold mb-4">My Courses for {{ current_semester.year }} {{ current_semester.term }}</h1>
-  {% else %}
-    <h1 class="text-primary fw-bold mb-4">My Courses</h1>
+    <div class="alert alert-info" role="alert">
+      <strong>Semester:</strong> {{ current_semester.year }} {{ current_semester.term }} |
+      <strong>Dates:</strong> {{ current_semester.start_date.strftime('%b %d') }} – {{ current_semester.end_date.strftime('%b %d') }}
+    </div>
   {% endif %}
 
-
-
-  {% if courses_info %}
-  <div class="card shadow-sm mb-4">
+  
+  <div class="card mb-5 shadow-sm">
     <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
       <h5 class="mb-0">Enrolled Courses</h5>
-      <input type="text" id="searchInput" class="form-control w-25" placeholder="Search courses...">
-    </div>
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-striped table-hover align-middle mb-0">
-          <thead class="table-dark">
-            <tr>
-              <th>Course ID</th>
-              <th>Course Name</th>
-              <th>Teacher</th>
-              <th>Grade</th>
-              <th>Units</th>
-              <th>Start Date</th>
-              <th>End Date</th>
-              <th>Days</th>
-              <th>Start Time</th>
-              <th>End Time</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="coursesTable">
-            {% for course, grade, teacher in courses_info %}
-            <tr>
-              <td>{{ course.course_id }}</td>
-              <td>{{ course.course_name }}</td>
-              <td>{{ teacher }}</td>
-              <td>{{ grade if grade is not none else "N/A" }}</td>
-              <td>{{ course.course_unit }}</td>
-              <td>{{ course.start_date.strftime('%Y-%m-%d') if course.start_date else 'N/A' }}</td>
-              <td>{{ course.end_date.strftime('%Y-%m-%d') if course.end_date else 'N/A' }}</td>
-              <td>{{ course.days }}</td>
-              <td>{{ course.start_time.strftime('%H:%M') if course.start_time else 'N/A' }}</td>
-              <td>{{ course.end_time.strftime('%H:%M') if course.end_time else 'N/A' }}</td>
-              {% if not is_current_semester_finalized %}
-              <td>
-                <a href="{{ url_for('student.unenroll', course_id=course.id) }}" class="btn btn-danger btn-sm">Unenroll</a>
-              </td>
-              {% endif %}
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-    {% if not is_current_semester_finalized %}
-    <div class="card-footer bg-light">
-      <form method="post" action="{{ url_for('student.finalize_enrollment') }}">
-        <button type="submit" class="btn btn-success">Finalize Enrollment</button>
-      </form>
-    </div>
-    {% endif %}
-
-  </div>
-  {% else %}
-    <div class="alert alert-info">You are not enrolled in any courses for the current semester.</div>
-  {% endif %}
-
- <div class="card shadow-sm mb-4">
-    <div class="card-header bg-primary text-white">
-      <h5 class="mb-0">Enroll in a New Course</h5>
+      {% if not is_current_semester_finalized %}
+        <span class="badge bg-warning text-dark">Editing Open</span>
+      {% else %}
+        <span class="badge bg-secondary">Finalized</span>
+      {% endif %}
     </div>
     <div class="card-body">
-      {% if available_courses %}
-      <form method="post" action="{{ url_for('student.enroll_course') }}" class="row g-3 align-items-center">
-        <div class="col-md-8">
-          <label for="course_id" class="form-label">Select a course to enroll:</label>
-          <select name="course_id" id="course_id" class="form-select" required>
-            {% for course in available_courses %}
-            <option value="{{ course.id }}">
-              {{ course.course_name }} ({{ course.course_id }}) - {{ course.course_unit }} units | {{ course.days }} {{ course.start_time.strftime('%H:%M') }}-{{ course.end_time.strftime('%H:%M') }} | Capacity: {{ course.student_links|length }}/{{ course.capacity }} | Dates: {{ course.start_date.strftime('%b %d') }} to {{ course.end_date.strftime('%b %d') }} | Teacher: {{ course.teacher.first_name }} {{ course.teacher.last_name if course.teacher else 'N/A' }}
-            </option>
-            {% endfor %}
-          </select>
+      {% if courses_info %}
+        <div class="table-responsive">
+          <table class="table table-hover align-middle" id="enrolledCoursesTable">
+            <thead class="table-light">
+              <tr>
+                <th>Course Name</th>
+                <th>Code</th>
+                <th>Units</th>
+                <th>Teacher</th>
+                <th>Time</th>
+                <th>Grade</th>
+                {% if not is_current_semester_finalized %}
+                  <th class="text-center">Actions</th>
+                {% endif %}
+              </tr>
+            </thead>
+            <tbody>
+              {% set total_units = namespace(value=0) %}
+              {% for course, grade, teacher_name in courses_info %}
+                {% set total_units.value = total_units.value + course.course_unit %}
+                <tr data-search="{{ course.course_name.lower() }} {{ course.course_id.lower() }} {{ teacher_name.lower() }}">
+                  <td><strong>{{ course.course_name }}</strong></td>
+                  <td><code>{{ course.course_id }}</code></td>
+                  <td class="text-center">{{ course.course_unit }}</td>
+                  <td>{{ teacher_name }}</td>
+                  <td>
+                    {{ course.days }}<br>
+                    <small>{{ course.start_time.strftime('%H:%M') }} – {{ course.end_time.strftime('%H:%M') }}</small>
+                  </td>
+                  <td>
+                    {% if grade %}
+                      <span class="badge bg-success fs-6">{{ grade }}</span>
+                    {% else %}
+                      <span class="badge bg-secondary fs-6">Pending</span>
+                    {% endif %}
+                  </td>
+                  {% if not is_current_semester_finalized %}
+                    <td class="text-center">
+                      <a href="{{ url_for('student.unenroll', course_id=course.id) }}"
+                         class="btn btn-sm btn-danger"
+                         onclick="return confirm('Are you sure you want to unenroll from {{ course.course_name }}?');">
+                        Unenroll
+                      </a>
+                    </td>
+                  {% endif %}
+                </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr class="fw-bold">
+                <td colspan="2">Total Units:</td>
+                <td class="text-center">{{ total_units.value }}</td>
+                <td colspan="3">
+                  {% if total_units.value < 14 and not is_current_semester_finalized %}
+                    <span class="badge bg-warning text-dark">Min 14 units required</span>
+                  {% elif total_units.value > 24 %}
+                    <span class="badge bg-danger">Over 24-unit limit</span>
+                  {% endif %}
+                </td>
+                {% if not is_current_semester_finalized %}
+                  <td></td>
+                {% endif %}
+              </tr>
+            </tfoot>
+          </table>
         </div>
-        <div class="col-md-4">
-          <button type="submit" class="btn btn-primary w-100">Enroll</button>
-        </div>
-      </form>
+
+        
+        {% if not is_current_semester_finalized and current_semester %}
+          <div class="card-footer bg-light mt-4">
+            <form method="post" action="{{ url_for('student.finalize_enrollment') }}">
+              <button type="submit"
+                      class="btn btn-success btn-lg"
+                      {% if total_units.value < 14 or total_units.value > 24 %}disabled{% endif %}>
+                Finalize Enrollment
+              </button>
+              {% if total_units.value < 14 %}
+                <small class="text-danger d-block mt-2">You must enroll in at least 14 units to finalize.</small>
+              {% elif total_units.value > 24 %}
+                <small class="text-danger d-block mt-2">Reduce your load to 24 units or less.</small>
+              {% else %}
+                <small class="text-muted d-block mt-2">You can still make changes until finalized.</small>
+              {% endif %}
+            </form>
+          </div>
+        {% endif %}
+
       {% else %}
-      <div class="alert alert-warning mt-3">No available courses to enroll in for the current semester.</div>
+        <p class="text-muted">You are not enrolled in any courses for this semester.</p>
       {% endif %}
     </div>
   </div>
 
-  <div class="text-center mt-4">
-    <a href="{{ url_for('student.semester_history') }}" class="btn btn-info">
-      <i class="bi bi-clock-history"></i> View Semester History
-    </a>
-  </div>
-</div>
-{% endblock %}
 
-{% block scripts %}
+  {% if available_courses and is_enrollment_open and not is_current_semester_finalized %}
+    <h2 class="text-secondary mb-3">Add a Course</h2>
+
+   
+    <div class="mb-3">
+      <input
+        type="text"
+        id="courseSearch"
+        class="form-control form-control-lg"
+        placeholder="🔍 Search available courses by name, code, or teacher..."
+      />
+    </div>
+
+    <form method="POST" action="{{ url_for('student.enroll_course') }}">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle" id="availableCoursesTable">
+          <thead class="table-dark">
+            <tr>
+              <th class="text-center" style="width: 80px;">Select</th>
+              <th>Course Name</th>
+              <th>Code</th>
+              <th>Units</th>
+              <th>Time</th>
+              <th>Days</th>
+              <th>Teacher</th>
+              <th>Capacity</th>
+              <th>Dates</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% set sorted_courses = available_courses | sort(attribute='course_name') %}
+            {% for course in sorted_courses %}
+              {% set current_total = total_units.value + course.course_unit %}
+              <tr data-search="{{ course.course_name.lower() }} {{ course.course_id.lower() }} {{ course.teacher.first_name.lower() }} {{ course.teacher.last_name.lower() }} {{ course.days.lower() }}">
+                <td class="text-center">
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="course_id"
+                      value="{{ course.id }}"
+                      id="course_{{ course.id }}"
+                      {% if current_total > 24 %}disabled{% endif %}
+                    >
+                  </div>
+                </td>
+                <td>
+                  <label for="course_{{ course.id }}" class="mb-0">
+                    {{ course.course_name }}
+                  </label>
+                </td>
+                <td><code>{{ course.course_id }}</code></td>
+                <td class="text-center">{{ course.course_unit }}</td>
+                <td>
+                  {{ course.start_time.strftime('%H:%M') if course.start_time else 'N/A' }} –
+                  {{ course.end_time.strftime('%H:%M') if course.end_time else 'N/A' }}
+                </td>
+                <td>{{ course.days }}</td>
+                <td>{{ course.teacher.first_name }} {{ course.teacher.last_name }}</td>
+                <td class="text-center">
+                  {{ course.student_links|length }} / {{ course.capacity }}
+                  {% if course.student_links|length >= course.capacity %}
+                    <span class="badge bg-danger">Full</span>
+                  {% else %}
+                    <span class="badge bg-success">Available</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {{ course.start_date.strftime('%b %d') }} – {{ course.end_date.strftime('%b %d') }}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-between mt-4">
+        <button type="submit" class="btn btn-success btn-lg" id="enrollBtn" disabled>
+          Enroll in Selected Course
+        </button>
+      </div>
+    </form>
+  {% elif not is_enrollment_open %}
+    <div class="alert alert-warning text-center">
+      <h5>Enrollment Closed</h5>
+      <p>Enrollment is currently closed. Please check back during the open period.</p>
+    </div>
+  {% elif is_current_semester_finalized %}
+    <div class="alert alert-info text-center">
+      <h5>Enrollment Finalized</h5>
+      <p>Your enrollment has been finalized. No further changes allowed.</p>
+    </div>
+  {% elif not available_courses %}
+    <div class="alert alert-info text-center">
+      <h5>No Courses Available</h5>
+      <p>All courses are full or you've reached your unit limit.</p>
+    </div>
+  {% endif %}
+</div>
+
+
 <script>
-document.getElementById('searchInput').addEventListener('keyup', function() {
-    let filter = this.value.toLowerCase();
-    let rows = document.querySelectorAll('#coursesTable tr');
-    rows.forEach(row => {
-        let text = row.textContent.toLowerCase();
-        row.style.display = text.includes(filter) ? '' : 'none';
+  document.addEventListener('DOMContentLoaded', function () {
+   
+    const radios = document.querySelectorAll('input[name="course_id"]');
+    const btn = document.getElementById('enrollBtn');
+    radios.forEach(radio => {
+      radio.addEventListener('change', () => {
+        btn.disabled = !radio.checked;
+      });
     });
-});
+
+    
+    const search = document.getElementById('courseSearch');
+    const rows = document.querySelectorAll('#availableCoursesTable tbody tr');
+    if (search && rows.length > 0) {
+      search.addEventListener('keyup', function () {
+        const filter = this.value.toLowerCase();
+        rows.forEach(row => {
+          const text = row.dataset.search || '';
+          row.style.display = text.includes(filter) ? '' : 'none';
+        });
+      });
+    }
+  });
 </script>
 {% endblock %}
