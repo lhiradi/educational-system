@@ -133,7 +133,7 @@ def show_courses():
     logger.info("Admin accessed courses page.")
     try:
         page = request.args.get("page", 1, type=int)
-        courses = Course.query.options(joinedload(Course.teacher)).paginate(page=page, per_page=10)
+        courses = Course.query.options(joinedload(Course.teacher), joinedload(Course.prerequisite)).paginate(page=page, per_page=10)
     except SQLAlchemyError as e:
         logger.error(f"Database error occured while fetching courses: {e}")
         flash("A database error occurred while fetching courses.", "danger")
@@ -146,6 +146,8 @@ def show_courses():
 def create_course():
     form = CourseForm()
     form.teacher_id.choices = [(t.id, f"{t.first_name} {t.last_name}") for t in Teacher.query.all()]
+    form.prerequisite_id.choices = [(0, 'None')] + [(c.id, f"{c.course_name} ({c.course_id})") for c in Course.query.all()]
+    
     if form.validate_on_submit():
         try:
             course = Course()
@@ -159,6 +161,8 @@ def create_course():
             course.start_time = form.start_time.data
             course.end_time = form.end_time.data
             course.teacher_id = form.teacher_id.data
+            prerequisite_id = form.prerequisite_id.data
+            course.prerequisite_id = prerequisite_id if prerequisite_id != 0 else None
             db.session.add(course)
             db.session.commit()
             logger.info(f"Course {course.course_id} created by admin.")
@@ -186,6 +190,8 @@ def edit_course(id):
     course = Course.query.get_or_404(id)
     form = CourseForm(obj=course)
     form.teacher_id.choices = [(t.id, f"{t.first_name} {t.last_name}") for t in Teacher.query.all()]
+    form.prerequisite_id.choices = [(0, 'None')] + [(c.id, f"{c.course_name} ({c.course_id})") for c in Course.query.all() if c.id != course.id]
+    
     if form.validate_on_submit():
         try:
             course.course_id = form.course_id.data
@@ -198,6 +204,8 @@ def edit_course(id):
             course.start_date = form.start_date.data
             course.end_date = form.end_date.data
             course.teacher_id = form.teacher_id.data
+            prerequisite_id = form.prerequisite_id.data
+            course.prerequisite_id = prerequisite_id if prerequisite_id != 0 else None
             
             db.session.commit()
             logger.info(f"Course {course.course_id} updated by admin.")

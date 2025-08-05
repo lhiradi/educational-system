@@ -144,6 +144,7 @@
               <th>Days</th>
               <th>Teacher</th>
               <th>Capacity</th>
+              <th>Prerequisite</th>
               <th>Dates</th>
             </tr>
           </thead>
@@ -183,6 +184,13 @@
                     <span class="badge bg-danger">Full</span>
                   {% else %}
                     <span class="badge bg-success">Available</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if course.prerequisite %}
+                      {{ course.prerequisite.course_name }}
+                  {% else %}
+                      N/A
                   {% endif %}
                 </td>
                 <td>

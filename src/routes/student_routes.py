@@ -64,7 +64,7 @@ def show_courses():
         flash("A database error occurred while fetching your courses.", "danger")
         return render_template("student/show_courses.html", courses_info=[], available_courses=[], current_semester=None,
                                is_current_semester_finalized=False,
-                               is_enrollment_open=is_enrollment_open)
+                               is_enrollment_open=False)
 
 
 
@@ -77,12 +77,12 @@ def enroll_course():
     if not current_semester:
         flash("Enrollment is not open at the moment.", "error")
         return redirect(url_for("student.show_courses"))
-    
+
     student_semester_status = StudentSemester.query.filter_by(student_id=current_user.id, semester_id=current_semester.id).first()
     if student_semester_status and student_semester_status.is_finalized:
         flash("You have already finalized your enrollment and cannot make changes.", "error")
         return redirect(url_for("student.show_courses"))
-    
+
     course_id = request.form.get("course_id")
     if not course_id:
         flash("No course selected for enrollment.", "error")
@@ -93,6 +93,17 @@ def enroll_course():
         if not course_to_enroll:
             flash("Selected course does not exist.", "error")
             return redirect(url_for("student.show_courses"))
+
+        if course_to_enroll.prerequisite_id:
+            prerequisite_course = Course.query.get(course_to_enroll.prerequisite_id)
+            if prerequisite_course:
+                enrollment = StudentsCourses.query.filter_by(
+                    student_id=current_user.id,
+                    course_id=prerequisite_course.id
+                ).first()
+                if not enrollment or enrollment.grade is None or enrollment.grade < 10:
+                    flash(f"You must pass the prerequisite course '{prerequisite_course.course_name}' before enrolling in '{course_to_enroll.course_name}'.", "error")
+                    return redirect(url_for("student.show_courses"))
 
         enrolled_courses_links = StudentsCourses.query.filter_by(student_id=current_user.id, semester_id=current_semester.id).all()
         enrolled_courses = [link.course for link in enrolled_courses_links]
@@ -117,12 +128,12 @@ def enroll_course():
 
         new_link = StudentsCourses(student_id=current_user.id, course_id=course_to_enroll.id, semester_id=current_semester.id ,enrollment_date=date.today())
         db.session.add(new_link)
-        
+
         student_semester = StudentSemester.query.filter_by(student_id=current_user.id, semester_id=current_semester.id).first()
         if not student_semester:
             student_semester = StudentSemester(student_id=current_user.id, semester_id=current_semester.id)
             db.session.add(student_semester)
-        
+
         db.session.commit()
 
         logger.info(f"Student {current_user.student_id} successfully enrolled in course {course_to_enroll.course_name} for semester {current_semester.year}, {current_semester.term}.")

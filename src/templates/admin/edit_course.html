@@ -58,6 +58,10 @@
                         {{ form.teacher_id.label(class="form-label") }}
                         {{ form.teacher_id(class="form-select") }}
                     </div>
+                    <div class="mb-3">
+                        {{ form.prerequisite_id.label(class="form-label") }}
+                        {{ form.prerequisite_id(class="form-select") }}
+                    </div>
                     <div class="d-flex justify-content-end">
                         <a href="{{ url_for('admin.show_courses') }}" class="btn btn-secondary me-2">Cancel</a>
                         <button type="submit" class="btn btn-success">{{ 'Create' if 'create' in request.endpoint else 'Update' }} Course</button>

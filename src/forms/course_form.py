@@ -1,9 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import (
     StringField, SubmitField, SelectField, DateField,
-    IntegerField, TimeField,
+    IntegerField, TimeField
 )
-from wtforms.validators import DataRequired, Length, NumberRange
+from wtforms.validators import DataRequired, Length, NumberRange, Optional
 
 
 class CourseForm(FlaskForm):
@@ -17,4 +17,5 @@ class CourseForm(FlaskForm):
     start_date = DateField('Start Date', validators=[DataRequired()], format='%Y-%m-%d')
     end_date = DateField('End Date', validators=[DataRequired()], format='%Y-%m-%d')
     teacher_id = SelectField('Teacher', coerce=int, validators=[DataRequired()])
+    prerequisite_id = SelectField('Prerequisite Course', coerce=int, validators=[Optional()])
     submit = SubmitField('Save Course')

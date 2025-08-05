@@ -17,7 +17,10 @@ class Course(db.Model):
     start_time = db.Column(db.Time, nullable=False)
     end_time = db.Column(db.Time, nullable=False)
     teacher_id = db.Column(db.Integer, db.ForeignKey("teachers.id"))
-        
+    prerequisite_id = db.Column(db.Integer, db.ForeignKey("courses.id"), nullable=True)
+    
+    prerequisite = db.relationship('Course', remote_side=[id], backref='prerequisite_of')
+    
     student_links = db.relationship(
         'StudentsCourses',
         back_populates='course',
