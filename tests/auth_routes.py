@@ -9,7 +9,7 @@ def test_login_logout(client, init_database):
     """
     rv = login(client, 'admin123', 'password')
     assert rv.status_code == 200
-    assert b'Welcome, Admin!' in rv.data
+    assert b'Welcome to your home page' in rv.data
 
 
     rv = logout(client)
